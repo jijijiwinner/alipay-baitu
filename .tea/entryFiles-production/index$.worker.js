@@ -3,9 +3,7 @@ require('./config$');
 require('./importScripts$');
 function success() {
 require('../..//app');
-require('../../page/record/record');
 require('../../page/index/index');
-require('../../page/school/school');
 require('../../page/mine/mine');
 require('../../page/person/person');
 require('../../page/wallet/wallet');
@@ -18,6 +16,7 @@ require('../../page/record/record');
 require('../../page/groundRecharge/groundRecharge');
 require('../../page/refund/refund');
 require('../../page/recharge/recharge');
+require('../../page/school/school');
 require('../../page/schoolNew/schoolNew');
 require('../../page/operation/operation');
 require('../../page/waterThat/waterThat');

@@ -12,7 +12,6 @@ Page({
     disabled: false,
     aniData: {},
     current: 0,
-    tel: true
   },
   onLoad() {
     var animation = my.createAnimation({
@@ -26,18 +25,6 @@ Page({
       key: 'userId', // 缓存数据的key
       success: (res) => {
         this.setData({ userId: res.data })
-      },
-    });
-  },
-  onShow() {
-    my.getStorage({
-      key: 'telephone', // 缓存数据的key
-      success: (res) => {
-        if (res.data == "" || res.data == undefined) {
-          this.setData({ telephone: res.data })
-        } else {
-          this.setData({ tel: false })
-        }
       },
     });
   },
@@ -67,7 +54,7 @@ Page({
       })
     }
     // 网络请求
-    if (telephone !== '') {
+    if (telephone !== '' || telephone !== null) {
       app.req.requestPostApi(url, params, this, (res) => {
         my.showToast({
           content: '验证码已发送',
@@ -112,14 +99,6 @@ Page({
     // 网络请求
     if (telephone !== '' && code !== '') {
       app.req.requestPostApi(url, params, this, res => {
-        my.setStorage({
-          key: 'id',
-          data: res.res.sa_id
-        })
-        my.setStorage({
-          key: 'telephone',
-          data: res.res.sa_phone
-        })
         my.confirm({
           title: '温馨提示',
           content: '绑定成功',
@@ -176,10 +155,8 @@ Page({
   },
   // 点击取消跳转到页面
   toRecharge() {
-    this.setData({
-      showAct: false,
-    })
-    my.navigateTo({ url: '/page/groundRecharge/groundRecharge' });
+    this.setData({ showAct: false })
+    my.navigateBack({});
   }
 });
 

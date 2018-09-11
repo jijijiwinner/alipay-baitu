@@ -23,13 +23,17 @@ Page({
     let that = this;
     that.setData({
       onInput: true,
-      inputVal: e.detail.value // 获取输入框的值s
+      inputVal: e.detail.value // 获取输入框的值
     })
+  },
+   // 输入完成以后
+  onConfirm(e) {
+    this.sub();
   },
   // 表单提交
   sub(e) {
     var that = this;
-    var inputVal = e.detail.value.schoolInput;   // 输入值传递给后台获取搜索结果
+    var inputVal = that.data.inputVal;   // 输入值传递给后台获取搜索结果
     var url = "/miniprogram/getAllSchools";
     var params = {
       schoolName: inputVal,
@@ -47,17 +51,17 @@ Page({
     let text = e.target.dataset.text;
     let id = e.target.id
     this.setData({ clicked: id })
-    let instructions = '您选中的是' + text + '选错学校设备将无法使用'
+    let instructions = '您选中的是' + text + '选错学校将无法使用设备'
     my.confirm({
       title: '温馨提示',
       content: instructions,
-      confirmButtonText: '确定选择',
-      cancelButtonText: '取消选择',
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
       success: (res) => {
         if (res.confirm) {
           let url = '/miniprogram/edit_school';
           let userId = my.getStorageSync({
-            key: 'userId', // 缓存数据的key
+            key: 'userId',
           }).data;
           let time = new Date().getTime()
           let sign = app.common.createSign({

@@ -2,7 +2,7 @@
   <form onSubmit='baitu_getBack'>
     <!-- 忘记密码手机号码  -->
     <view class='baitu_enrol'>
-      <input onInput='getTel' name="telephone" type='text' maxlength='11' placeholder='手机号' placeholder-class='register_input'></input>
+      <input onInput='getTel' name="telephone" type='number' maxlength='13' placeholder='手机号' placeholder-class='register_input'></input>
     </view>
     <!-- 忘记验证码  -->
     <view class='baitu_enrol'>
@@ -10,10 +10,7 @@
       <button hover-class="none" class='btnrth' onTap='getCode' disabled='{{buttonDsiable}}'>{{codes}}</button>
     </view>
     <!-- 完成按钮  -->
-    <button class='goback_btn' form-type="submit" hover-class="none" a:if="{{tel}}">
-      <image src="../../image/btn_login.png" mode="scaleToFill" />
-    </button>
-    <button a:else disabled="disabled" class='goback_btn' form-type="submit" hover-class="none">
+    <button class='goback_btn' form-type="submit" hover-class="none">
       <image src="../../image/btn_login.png" mode="scaleToFill" />
     </button>
   </form>

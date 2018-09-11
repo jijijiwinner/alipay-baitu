@@ -1,8 +1,9 @@
 const app = getApp();
 Page({
   data: {
-    id: '',           //用户ID
-    schoolName: '',       //学校
+    id: '',           // 用户ID
+    schoolName: '',   // 学校
+    phone: '',         // 用户手机号
   },
   onShow() {
     let that = this;
@@ -22,19 +23,11 @@ Page({
     }
     // 网络请求
     app.req.requestPostApi(url, params, this, res => {
-      my.getStorage({
-        key: 'id',// 缓存数据的key
-        success: res => {
-          that.setData({ id: res.data })
-        }
+      that.setData({
+        schoolName: res.res.schoolName,
+        telephone: res.res.phone,
+        id: res.res.id
       })
-      my.getStorage({
-        key: 'telephone', // 缓存数据的key
-        success: (res) => {
-          that.setData({ telephone: Number(res.data) })
-        },
-      });
-      that.setData({ schoolName: res.res.schoolName })
     })
 
   },

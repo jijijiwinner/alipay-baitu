@@ -37,12 +37,12 @@ Page({
     state: 0,//状态，0：空闲，1：运行中
     tradeNO: '',//订单号
   },
+  //调用获取屏幕宽高以及授权方法
   onLoad() {
     this.getAuthCode();
-    // 调用获取宽度高度
     this.getInfo();
   },
-  getAuthCode:function(){
+  getAuthCode() {
     my.getAuthCode({
       scopes: 'auth_base',
       success: res => {
@@ -52,18 +52,17 @@ Page({
         let url = '/alipay/miniprogram/grantLogin';
         app.req.requestPostApi(url, params, this, res => {
           let userId = res.res.UserId;
-          let phone = res.res.phone;
           let actoken = res.res.AccessToken;
           this.setData({
-             userId: userId,
-             actoken: actoken
+            userId: userId,
+            actoken: actoken
           });
           my.setStorage({
             key: 'userId',
             data: userId,
           });
           my.setStorage({
-            key:'actoken',
+            key: 'actoken',
             data: actoken
           })
           if (res.message == "10002") {
@@ -71,19 +70,19 @@ Page({
               url: '/page/school/school',
             });
             // 10001 为已经注册的账号 执行登录接口
-          }else if (res.message == "10001") {
+          } else if (res.message == "10001") {
             self.getAutoLogin();
           }
         })
       }
     })
   },
-  getAutoLogin:function(){
+  getAutoLogin() {
     let url = '/alipay/miniprogram/autologin';
     let params = { account: this.data.userId };
     app.req.requestPostApi(url, params, this, res => {
       my.setStorage({
-        key:'worker',
+        key: 'worker',
         data: res.res.is_baitu_worker
       });
       my.setStorage({
@@ -101,7 +100,7 @@ Page({
       this.getCookie();
     })
   },
-  getCookie(){
+  getCookie() {
     /* 缓存值判断用户什么入口进入 跳转相应页面 */
     my.getStorage({
       key: 'page',
@@ -220,7 +219,6 @@ Page({
     let url = '/alipay/miniprogram/facepay_open_machine';
     let userId = this.data.userId;
     let parmas = { tradeNo: tradeNO, alipayPid: userId };
-    // 网络请求
     app.req.requestPostApi(url, parmas, this, res => {
       var that = this;
       if (res.res.openType === 1) {
@@ -387,7 +385,7 @@ Page({
     let modeId = this.data.waterType;
     let url = '/alipay/miniprogram/facepay';
     let params = { alipayPid: userId, mapping: mapping, modeId: modeId };
-    // 网络请求
+
     app.req.requestPostApi(url, params, this, res => {
       let tradeNO = res.res.tradeNo;
       let balanceOf = res.res.is_money_enough;
@@ -505,7 +503,6 @@ Page({
     let modeId = this.data.WasherType;
     let url = '/alipay/miniprogram/facepay';
     let params = { alipayPid: userId, mapping: mapping, modeId: modeId };
-
     app.req.requestPostApi(url, params, this, res => {
       let tradeNO = res.res.tradeNo;
       let balanceOf = res.res.is_money_enough;
@@ -619,7 +616,6 @@ Page({
     let modeId = this.data.dryerType;
     let url = '/alipay/miniprogram/facepay';
     let params = { alipayPid: userId, mapping: mapping, modeId: modeId };
-
     app.req.requestPostApi(url, params, this, res => {
       let tradeNO = res.res.tradeNo;
       let balanceOf = res.res.is_money_enough;
@@ -748,7 +744,6 @@ Page({
     cxt_arc.beginPath();//开始一个新的路径
     cxt_arc.arc(x, y, radius, s, e, false);
     cxt_arc.stroke();//对当前路径进行描边
-
     cxt_arc.draw();
   },
   // 获取设备信息

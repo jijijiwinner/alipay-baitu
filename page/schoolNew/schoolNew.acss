@@ -1,58 +1,50 @@
 
-.content {
-  padding: 0 10rpx;
-}
-
+/* 最外层盒子 */
 .school {
   width: 100%;
   padding: 15rpx 0;
-  border-bottom: solid 1px #eee;
+}
+/* 搜索盒子 */
+.search {
+  padding: 10rpx;
 }
 
-.search {
-  position: relative;
+/* 搜索输入框 */
+.search .schSearch {
   display: flex;
   justify-content: center;
   align-items: center;
   align-content: center;
+  box-sizing: border-box;
+  padding: 10rpx 0rpx;
+  margin: 30rpx 80rpx;
+  background: #E8E8E8;
 }
-.reading{
-    margin-top: 10rpx;
+/* 输入框 */
+.schSearch input {
+  font-size: 28rpx;  
 }
-
-.search input {
-  margin: 20rpx 0;
-  text-align: center;
+/* 搜索框的图片 */
+.schSearch image {
+  width: 60rpx;
+  height: 60rpx;
+  box-sizing: border-box; 
+  margin-left: -180rpx;
 }
-
+/* 输入的样式 */
 .searchColor {
-  color: #63b8f4;
+  display: flex;
+  align-items: center;
+  color: #929399;
 }
-
-.search button {
+/* 学校列表样式 */
+.content {
+  margin: 20rpx 0;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  border-bottom: solid 1px #eee;  
+}
+.a-input{
+  background: none;
   padding: 0;
-  margin: 0;
-  position: absolute;
-  top: 4rpx;
-  right: 145rpx;
-  background-color: #fff;
-}
-
-.search button::after {
-  content: '';
-  display: none;
-  outline: none;
-  border: 0;
-}
-.school {
-  background: #fff;    
-}
-.a-button {
-    border: none;
-}
-.color {
-  color: red;
-}
-.scColor{
-  background-color: #63b8f4;
 }
