@@ -8,7 +8,7 @@ Page({
     re_array: [],
     co_array: [],
     show: true,//联动bar
-    current: 0,//联动swiper
+    current: true,//联动swiper
 
     re_page: 1,
     co_page: 1,
@@ -26,12 +26,12 @@ Page({
     if (e.target.id == 'rech') {
       this.setData({
         show: true,
-        current: 0
+        current: true
       })
     } else {
       this.setData({
         show: false,
-        current: 1
+        current: false
       })
     }
   },
@@ -40,7 +40,7 @@ Page({
    */
   onLoad(options) {
     var that = this;
-    this.setSwiperHeight();
+    //this.setSwiperHeight();
     my.getStorage({
       key: 'userId',
       success: (res) => {
@@ -94,6 +94,9 @@ Page({
         return;
       }
       var array = that.data.re_array;
+      if(page == 1){
+        array = [];
+      }
       for (var i = 0; i < res.res.length; i++) {
         //后端数据坑，需要自己解时间
         var date = new Date(res.res[i].timestamp);
@@ -135,6 +138,9 @@ Page({
         return;
       }
       var array = that.data.co_array;
+      if(page == 1){
+        array = [];
+      }
       for (var i = 0; i < res.res.length; i++) {
         array.push(res.res[i]);
       }
@@ -166,16 +172,16 @@ Page({
    * swiper滑动事件
    */
   changeSwiper(e) {
-    if (e.detail.current == 1) {
-      this.setData({
-        current: 1,
-        show: false
-      })
-    } else {
-      this.setData({
-        current: 0,
-        show: true
-      })
-    };
+    // if (e.detail.current == 1) {
+    //   this.setData({
+    //     current: 1,
+    //     show: false
+    //   })
+    // } else {
+    //   this.setData({
+    //     current: 0,
+    //     show: true
+    //   })
+    // };
   },
 });

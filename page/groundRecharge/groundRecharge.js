@@ -103,7 +103,6 @@ Page({
       activityId: this.data.actId,
       ground_promotion_no: _promoters,
     }
-    console.log(params)
     // 网络请求
     app.req.requestPostApi(url, params, this, res => {
       let tradeNO = res.res

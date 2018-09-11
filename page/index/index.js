@@ -13,7 +13,7 @@ Page({
     current: 0,//功能swiper页
     show: true,//功能bar
 
-    username: '',//username,接口参数
+    userId: '',//username,接口参数
     mac: '',//mac地址
     is_baitu_work: false,
 
@@ -38,8 +38,70 @@ Page({
     tradeNO: '',//订单号
   },
   onLoad() {
+    this.getAuthCode();
     // 调用获取宽度高度
     this.getInfo();
+  },
+  getAuthCode:function(){
+    my.getAuthCode({
+      scopes: 'auth_base',
+      success: res => {
+        let self = this;
+        let authCode = res.authCode;
+        let params = { authCode: authCode }
+        let url = '/alipay/miniprogram/grantLogin';
+        app.req.requestPostApi(url, params, this, res => {
+          let userId = res.res.UserId;
+          let phone = res.res.phone;
+          let actoken = res.res.AccessToken;
+          this.setData({
+             userId: userId,
+             actoken: actoken
+          });
+          my.setStorage({
+            key: 'userId',
+            data: userId,
+          });
+          my.setStorage({
+            key:'actoken',
+            data: actoken
+          })
+          if (res.message == "10002") {
+            my.reLaunch({
+              url: '/page/school/school',
+            });
+            // 10001 为已经注册的账号 执行登录接口
+          }else if (res.message == "10001") {
+            self.getAutoLogin();
+          }
+        })
+      }
+    })
+  },
+  getAutoLogin:function(){
+    let url = '/alipay/miniprogram/autologin';
+    let params = { account: this.data.userId };
+    app.req.requestPostApi(url, params, this, res => {
+      my.setStorage({
+        key:'worker',
+        data: res.res.is_baitu_worker
+      });
+      my.setStorage({
+        key: 'telephone',
+        data: res.res.phone,
+      });
+      my.setStorageSync({
+        key: 'id',
+        data: res.res.id,
+      });
+      my.setStorageSync({
+        key: 'cardNo',
+        data: res.res.cardNo,
+      });
+      this.getCookie();
+    })
+  },
+  getCookie(){
     /* 缓存值判断用户什么入口进入 跳转相应页面 */
     my.getStorage({
       key: 'page',
@@ -49,6 +111,7 @@ Page({
             url: res.data
           });
         } else {
+          this.getAdInfo();
           my.getStorage({
             key: 'mac',
             success: (res) => {
@@ -56,92 +119,13 @@ Page({
                 this.setData({
                   mac: res.data
                 })
-                this.getType()
+                this.getType();
               }
             },
           });
         }
       },
     });
-    // 获取授权 auth_base 静默授权
-    my.getAuthCode({
-      scopes: 'auth_base',
-      success: (res) => {
-        // 拿授权的值，请求url登录接口
-        let authCode = res.authCode;
-        let params = { authCode: authCode }
-        let url = '/alipay/miniprogram/grantLogin';
-        app.req.requestPostApi(url, params, this, res => {
-          /* 接口返回值 支付宝用户标识 电话号码 actoken废弃  */
-          let userId = res.res.UserId;
-          let phone = res.res.phone;
-          let actoken = res.res.AccessToken;
-          // 赋值给初始化数据的userId
-          this.setData({ userId: userId })
-          // 缓存便于个人信息页显示
-          my.setStorage({
-            key: 'userId',
-            data: userId,
-          });
-          my.setStorage({
-            key: 'actoken',
-            data: actoken,
-          })
-          // 根据返回值判断  10002 则未注册账号，进入选择学校页
-          if (res.message == "10002") {
-            my.navigateTo({
-              url: '/page/school/school'
-            });
-            // 10001 为已经注册的账号 执行登录接口
-          } else if (res.message == "10001") {
-            let url = '/alipay/miniprogram/autologin';
-            let params = { account: this.data.userId, };
-            // 网络请求
-            app.req.requestPostApi(url, params, this, res => {
-              let is_baitu_worker = res.res.is_baitu_worker;
-              this.setData({ is_baitu_worker: is_baitu_worker })
-              my.setStorageSync({
-                key: 'worker', // 缓存数据的key
-                data: res.res.is_baitu_worker, // 要缓存的数据
-              });
-              my.getStorage({
-                key: 'userId', // 缓存数据的key
-                success: (res) => {
-                  this.setData({ userId: res.data })
-                  this.getAdInfo();
-                },
-              });
-              let that = this;
-              // 根据返回值判断 电话是否为空 显示不同 便于个人信息页手机绑定
-              if (res.res.phone == 'null') {
-                my.setStorage({
-                  key: 'telephone',
-                  data: '',
-                })
-              } else {
-                my.setStorage({
-                  key: 'telephone',
-                  data: res.res.phone
-                })
-              }
-              /* 缓存接口返回值 用户id 学校名称 虚拟卡号  */
-              my.setStorageSync({
-                key: 'id',
-                data: res.res.id,
-              });
-              my.setStorageSync({
-                key: 'schoolName',
-                data: res.res.schoolName,
-              });
-              my.setStorageSync({
-                key: 'cardNo',
-                data: res.res.cardNo,
-              });
-            })
-          }
-        })
-      }
-    })
   },
   // bar 功能以及swiper联动
   show(e) {
@@ -173,10 +157,7 @@ Page({
   // 获取模式
   getType() {
     var that = this;
-    let userId = my.getStorageSync({
-      key: 'userId', // 缓存数据的key
-    }).data;
-    this.setData({ userId: userId })
+    let userId = this.data.userId;
     var time = new Date().getTime();
     var sign = app.common.createSign({
       mac: that.data.mac,
@@ -224,14 +205,12 @@ Page({
         this.setData({
           blowerType: e.target.id
         })
-        console.log(this.data.blowerType)
         this.openBlower();
         break;
       case 4:
         this.setData({
           dryerType: e.target.id
         })
-        console.log(this.data.dryerType)
         this.openDryer();
         break;
     }
@@ -241,7 +220,6 @@ Page({
     let url = '/alipay/miniprogram/facepay_open_machine';
     let userId = this.data.userId;
     let parmas = { tradeNo: tradeNO, alipayPid: userId };
-    my.removeStorage({ key: 'mac', });
     // 网络请求
     app.req.requestPostApi(url, parmas, this, res => {
       var that = this;
@@ -318,12 +296,6 @@ Page({
             success: res => {
               let url = '/alipay/miniprogram/facepay_open_machine';
               let userId = this.data.userId;
-              my.removeStorage({
-                key: 'mac',
-                success: (res) => {
-                  console.log('已删除mac')
-                },
-              });
               var params = {
                 tradeNo: tradeNO,
                 alipayPid: userId,
@@ -588,7 +560,6 @@ Page({
     let userId = this.data.userId;
     let mapping = this.data.mac;
     let modeId = this.data.blowerType;
-    console.log('吹风机', modeId)
     let url = '/alipay/miniprogram/facepay';
     let params = { alipayPid: userId, mapping: mapping, modeId: modeId };
 
@@ -702,9 +673,7 @@ Page({
     let url = '/alipay/miniprogram/facepay_open_machine';
     let userId = this.data.userId;
     let params = { tradeNo: tradeNO, alipayPid: userId };
-    my.removeStorage({ key: 'mac', });
     app.req.requestPostApi(url, params, this, res => {
-      console.log(JSON.stringify(res))
       my.showToast({
         content: '机器开启成功',
         type: 'success',

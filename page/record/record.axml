@@ -3,9 +3,8 @@
   <view onTap='select' id="cosu" class="{{!show?'select':'normal'}}">消费记录</view>
 </view>
 <view>
-  <swiper current='{{current}}' onChange='changeSwiper' style="height:{{(screenHeight-30)/pixelRatio}}rpx">
     <!-- 充值记录 -->
-    <swiper-item>
+    <view a:if="{{current}}" class="swiper">
       <view>
         <block a:for="{{re_array}}" a:key="index">
           <view class='item'>
@@ -20,9 +19,9 @@
       <view class='loading'>
         <text onTap='fresh' id="re_loading">{{re_loading}}</text>
       </view>
-    </swiper-item>
+    </view>
     <!-- 消费记录 -->
-    <swiper-item>
+    <view a:else class="swiper">
       <view>
         <block a:for="{{co_array}}" a:key="index">
           <view class='item'>
@@ -40,6 +39,5 @@
       <view class='loading'>
         <text onTap='fresh' id="co_loading">{{co_loading}}</text>
       </view>
-    </swiper-item>
-  </swiper>
+    </view>
 </view>

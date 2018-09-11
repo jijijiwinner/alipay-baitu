@@ -1,7 +1,4 @@
 
-.a-swiper{
-  height: auto;
-}
 .section{
   width: 100%;
   display: flex;

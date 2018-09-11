@@ -1,6 +1,7 @@
 {
-  "pages": [
+  "pages": [ 
     "page/index/index", 
+    "page/school/school", 
     "page/mine/mine",     
     "page/person/person", 
     "page/wallet/wallet",
@@ -12,8 +13,7 @@
     "page/record/record",
     "page/groundRecharge/groundRecharge",                     
     "page/refund/refund",
-    "page/recharge/recharge",   
-    "page/school/school",    
+    "page/recharge/recharge", 
     "page/schoolNew/schoolNew",
     "page/operation/operation",            
     "page/waterThat/waterThat",

@@ -31,7 +31,7 @@ Page({
       my.getStorage({
         key: 'telephone', // 缓存数据的key
         success: (res) => {
-          that.setData({ telephone: res.data })
+          that.setData({ telephone: Number(res.data) })
         },
       });
       that.setData({ schoolName: res.res.schoolName })

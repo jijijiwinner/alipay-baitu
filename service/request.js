@@ -75,11 +75,14 @@ function requestApi(url, params, method, headers, sourceObj, successFun, failFun
       if (res.data.return) {
         typeof successFun == 'function' && successFun(res.data, sourceObj)
       } else {
-        if (url !== '/miniprogram/autologin' && url !== '/miniprogram/stu/getact' && url !== '/miniprogram/sign/checkBind' && url !== '/miniprogram/machine/stophot') {
-          my.alert({
-            title: "错误提示",
-            content: res.data.message,
-          })
+        if (url !== '/alipay/miniprogram/autologin' 
+            && url !== '/miniprogram/stu/getact'
+            && url !== '/miniprogram/sign/checkBind'
+            && url !== '/miniprogram/machine/stophot') {
+              my.alert({
+                title: "错误提示",
+                content: res.data.message,
+              })
         }
       }
     },

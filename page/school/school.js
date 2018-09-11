@@ -10,30 +10,36 @@ Page({
     actoken: '',         //  令牌
     text: '',            //  点击选中的学校名称
     clicked: 0,
+    userId:''
   },
   // load函数
   onLoad(options) {
+    my.getStorage({
+      key: 'actoken', // 缓存数据的key
+      success: (res) => {
+        this.setData({
+          actoken: res.data
+        })
+      },
+    });
+    my.getStorage({
+      key:'userId',
+      success: (res) => {
+        this.setData({
+          userId: res.data
+        })
+      }
+    })
+    this.getAllSchools();
+  },
+  getAllSchools:function(){
     var that = this;
     var url = '/miniprogram/getAllSchools';
-    var params = null;
-    app.req.requestPostApi(url, params, this, function(res) {
+    app.req.requestPostApi(url, {}, this, function(res) {
       that.setData({
         schoolList: res.res
       })
     })
-    let account = my.getStorage({
-      key: 'userId', // 缓存数据的key
-      success: (res) => {
-        this.setData({ account: res.data })
-        console.log(this.data.userId)
-      },
-    });
-    let actoken = my.getStorage({
-      key: 'actoken', // 缓存数据的key
-      success: (res) => {
-        this.setData({ actoken: res.data })
-      },
-    });
   },
   // 输入事件
   onInput(e) {
@@ -62,12 +68,12 @@ Page({
   // 获取学校
   selectSchool(e) {
     let text = e.target.dataset.text;
-    var obj = { id: e.target.id, account: this.data.account }
     let url = '/alipay/miniprogram/register'
-    let params = { schoolId: obj.id, account: obj.account, accessToken: this.data.actoken }
+    let params = { schoolId:  e.target.id, account: this.data.userId, accessToken: this.data.actoken }
     let instructions = '您选中的是' + text + '选错学校设备将无法使用哦'
     this.setData({ clicked: e.target.id })    
     // 网络请求'
+    let that = this;
     my.confirm({
       title: '温馨提示',
       content: instructions,
@@ -76,26 +82,10 @@ Page({
       success: (res) => {
         if (res.confirm) {
           app.req.requestPostApi(url, params, this, res => {
-            let schoolName = my.setStorage({
-              key: 'schoolName',
-              data: res.res.schoolName,
-              success: (res) => {
-                that.setData({ schoolName: res.data })
-              },
-            });
-            let cardNo = my.setStorage({
-              key: 'cardNo',
-              data: res.res.cardNo,
-              success: (res) => {
-                that.setData({ cardNo: res.data })
-              },
-            });
             my.reLaunch({
               url: '/page/index/index',
             });
           })
-        } else {
-          return;
         }
       },
     });

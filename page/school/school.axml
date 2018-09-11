@@ -8,7 +8,9 @@
     </form>
   </view>
   <view a:for="{{schoolList}}" class='content' a:key="index">
+    <!-- 判断当前ID是不是选中的ID -->
     <view a:if="{{item.sc_id == clicked}}" id="item.sc_id" >
+      <!-- 是的话添加背景色以及赋值 -->
       <view style='background:#63b8f4;' 
         id="{{item.sc_id}}" 
         data-text="{{item.sc_name}}" 
@@ -17,6 +19,7 @@
         {{item.sc_name}}
       </view>
     </view>
+    <!-- false 还是一样 -->
     <view a:else>
       <view id="{{item.sc_id}}" data-text="{{item.sc_name}}" onTap='selectSchool' class='school'>{{item.sc_name}}</view>      
     </view>
