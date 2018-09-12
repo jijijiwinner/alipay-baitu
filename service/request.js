@@ -78,7 +78,8 @@ function requestApi(url, params, method, headers, sourceObj, successFun, failFun
         if (url !== '/alipay/miniprogram/autologin' 
             && url !== '/miniprogram/stu/getact'
             && url !== '/miniprogram/sign/checkBind'
-            && url !== '/miniprogram/machine/stophot') {
+            && url !== '/miniprogram/machine/stophot'
+            && url !== '/miniprogram/get_school_by_qrcode') {
               my.alert({
                 title: "错误提示",
                 content: res.data.message,

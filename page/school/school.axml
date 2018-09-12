@@ -1,30 +1,32 @@
 <view class="school">
   <!-- 学校显示 -->
   <view class='search'>
-    <form onSubmit='sub'>
-      <!-- 搜索学校 -->
-      <view class="schSearch">
-        <image onTap='sub' src="../../image/search.png" mode="aspectFit" />
-        <input name="schoolInput" onInput='onInput' onConfirm='onConfirm' type='text' placeholder-class='searchColor' placeholder='请输入学校名称' />
-      </view>
-    </form>
+    <input name="schoolInput" onInput='onInput' onConfirm="onConfirm" type='text' placeholder-class='searchColor' placeholder='输入你的学校名称' bindconfirm='search' />
+    <button catchTap='searchSchool' hover-class='none'	>
+      <icon type='search' size='20' class='reading'></icon>
+    </button>
+  </view>
+  <!-- 学校列表 -->
+  <view a:for="{{schoolList}}" class='content' a:key="index">
+    <view id="{{item.sc_id}}" data-text="{{item.sc_name}}" catchTap='selectSchool' class='school'>{{item.sc_name}}</view>
   </view>
   <!-- 扫码进入弹出框 -->
   <view class='pop' a:if="{{pop}}">
     <view class='shadow'></view>
     <view class='contents'>
-      <view class="pop_school">
-        <view class="opacity">您的学校</view>
-        <view>{{scName}}</view>
+      <view class='pop_header'>
+        <text>您的学校</text>
       </view>
-      <view class="pop_choose">
-        <view class="no_school" catchTap="noSchool">不是我的学校</view>
-        <view class="pop_ok" catchTap= "okSchool">确定</view>
+      <view class='pop_center'>
+        <text>{{schoolName}}</text>
+      </view>
+      <view class='pop_tips'>
+        <text>选错学校设备将无法使用</text>
+      </view>
+      <view class='pop_bottom'>
+        <button onTap='selectOther'>重新选校</button>
+        <button onTap='confirm'>确定</button>
       </view>
     </view>
-  </view>
-  <!-- 学校列表 -->
-  <view a:for="{{schoolList}}" class='content' a:key="index">
-    <view id="{{item.sc_id}}" data-text="{{item.sc_name}}" onTap='selectSchool' class='school'>{{item.sc_name}}</view>
   </view>
 </view>

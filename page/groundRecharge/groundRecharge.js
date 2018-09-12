@@ -71,10 +71,10 @@ Page({
    * 充值button事件
    */
   recharge() {
-    let id = my.getStorageSync({
-      key: 'id', // 缓存数据的key
+    let stuId = my.getStorageSync({
+      key: 'stuId', // 缓存数据的key
     }).data;
-    this.setData({ id: id })
+    this.setData({ stuId: stuId })
     if (this.data.money == 0) {//充值数目不为空
       my.alert({
         title: '提示',
@@ -98,7 +98,7 @@ Page({
     let url = '/miniprogram/alipay';
     let params = {
       userName: this.data.userId,
-      stuId: id,
+      stuId: this.data.stuId,
       money: this.data.money,
       activityId: this.data.actId,
       ground_promotion_no: _promoters,

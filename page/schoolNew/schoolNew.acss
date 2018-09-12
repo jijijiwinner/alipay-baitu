@@ -1,50 +1,53 @@
-
 /* 最外层盒子 */
 .school {
   width: 100%;
-  padding: 15rpx 0;
+  padding: 5rpx 0;
 }
 /* 搜索盒子 */
 .search {
-  padding: 10rpx;
-}
-
-/* 搜索输入框 */
-.search .schSearch {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  align-content: center;
-  box-sizing: border-box;
-  padding: 10rpx 0rpx;
-  margin: 30rpx 80rpx;
+}
+
+/* 搜索输入框 */
+.search input {
+  margin: 30rpx 0;
+  font-size: 28rpx;  
+  padding-left: 30rpx;
   background: #E8E8E8;
 }
-/* 输入框 */
-.schSearch input {
-  font-size: 28rpx;  
+.search button{
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: 0.18rem;
+  right: 145rpx;
+  background: none;    
 }
-/* 搜索框的图片 */
-.schSearch image {
-  width: 60rpx;
-  height: 60rpx;
-  box-sizing: border-box; 
-  margin-left: -180rpx;
+.search button icon {
+  width: 50rpx;
+  height: 0.58rem;
+  background: none;
+}
+.search button::after {
+  content: '';
+  display: none;
+  outline: none;
+  border: none;
+}
+.a-button {
+  border: none;
 }
 /* 输入的样式 */
 .searchColor {
-  display: flex;
-  align-items: center;
   color: #929399;
 }
 /* 学校列表样式 */
 .content {
   margin: 20rpx 0;
-  padding: 0 20rpx;
+  padding: 15rpx;
   font-size: 28rpx;
   border-bottom: solid 1px #eee;  
-}
-.a-input{
-  background: none;
-  padding: 0;
 }

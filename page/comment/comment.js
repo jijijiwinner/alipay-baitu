@@ -19,7 +19,6 @@ Page({
     imagePath.splice(0, imagePath.length)
     my.getSystemInfo({
       success: (res) => {
-        console.log(res)
         that.setData({
           width: res.windowWidth / 4,
         })

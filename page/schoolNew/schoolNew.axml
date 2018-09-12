@@ -1,16 +1,13 @@
 <view class="school">
   <!-- 学校显示 -->
   <view class='search'>
-    <form onSubmit='sub'>
-      <!-- 搜索学校 -->
-      <view class="schSearch">
-        <image onTap='sub' src="../../image/search.png" mode="aspectFit" />
-        <input name="schoolInput" onInput='onInput' onConfirm='onConfirm' type='text' placeholder-class='searchColor' placeholder='请输入学校名称' />
-      </view>
-    </form>
+    <input name="schoolInput" onInput='onInput' onConfirm="onConfirm" type='text' placeholder-class='searchColor' placeholder='输入你的学校名称' bindconfirm='search' />
+    <button catchTap='searchSchool' hover-class='none'	>
+      <icon type='search' size='20' class='reading'></icon>
+    </button>
   </view>
   <!-- 学校列表 -->
   <view a:for="{{schoolList}}" class='content' a:key="index">
-    <view id="{{item.sc_id}}" data-text="{{item.sc_name}}" onTap='selectSchool' class='school'>{{item.sc_name}}</view>
+    <view id="{{item.sc_id}}" data-text="{{item.sc_name}}" catchTap='selectSchool' class='school'>{{item.sc_name}}</view>
   </view>
 </view>

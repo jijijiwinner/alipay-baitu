@@ -5,54 +5,73 @@ Page({
     schoolList: [],      //  学校列表
     inputVal: '',        //  获取输入框的值
     schoolName: '',      //  学校名称
-    scName: '',           //  扫码学校
-    scId: '',             //  学校标识
+    schoolId: '',        //  学校标识
+    mapping: '',         //  扫码返回的映射码
     userId: '',          //  用户标识
     actoken: '',         //  令牌
-    text: '',            //  点击选中的学校名称
-    clicked: 0,          //  选中状态
     pop: false           //   显示模态框
   },
-  // load函数
+  // 生命周期 获取学校
   onLoad() {
-    this.getAllSchools();
+    var that = this;
+    var params = null;
+    var url = '/miniprogram/getAllSchools';
+    app.req.requestPostApi(url, params, this, res => {
+      that.setData({
+        schoolList: res.res
+      })
+    })
+    this.scanSchool();
+  },
+  // 扫设备码或地推码获取学校
+  scanSchool() {
     let promoters = my.getStorageSync({ key: 'promoters' }).data;
+    let mapping = my.getStorageSync({ key: 'mac' }).data
     let actoken = my.getStorageSync({ key: 'actoken' }).data;
     let userId = my.getStorageSync({ key: 'userId' }).data;
-    this.setData({ actoken: actoken, userId: userId });
+    this.setData({ actoken: actoken, userId: userId, mapping: mapping });
     let url = '/miniprogram/get_school_by_qrcode';
     let params = {
-      ground_promotion_no: promoters
+      ground_promotion_no: promoters,
+      mapping: mapping,
     }
-    if (promoters !== null) {
+    if (promoters !== null || mapping !== null) {
       app.req.requestPostApi(url, params, this, res => {
-        let scName = res.res.schoolName;
-        let scId = res.res.schoolId;
-        this.setData({ scName: scName, scId: scId })
+        let schoolName = res.res.schoolName;
+        let schoolId = res.res.schoolId;
+        this.setData({ schoolName: schoolName, schoolId: schoolId })
         this.setData({ pop: true })
       })
     } else {
       return false;
     }
   },
-  getAllSchools() {
-    var that = this;
-    var url = '/miniprogram/getAllSchools';
-    app.req.requestPostApi(url, {}, this, res => {
-      that.setData({
-        schoolList: res.res
-      })
+  // 模态框选择学校
+  selectSchool(e) {
+    this.setData({
+      pop: true,
+      schoolName: e.currentTarget.dataset.text,
+      schoolId: e.currentTarget.id
     })
   },
-  // 模态框noSchool选择
-  noSchool() {
+  // 模态框重新选择
+  selectOther() {
     this.setData({ pop: false });
-    return false;
   },
-  // 模态框okSchool选择
-  okSchool() {
+  // 模态框确定
+  confirm() {
     this.setData({ pop: false });
-    this.getSchool();
+    this.register();
+  },
+  // 注册
+  register() {
+    let url = '/alipay/miniprogram/register'
+    let params = { schoolId: this.data.schoolId, account: this.data.userId, accessToken: this.data.actoken }
+    app.req.requestPostApi(url, params, this, res => {
+      my.reLaunch({
+        url: '/page/index/index',
+      });
+    })
   },
   // 输入事件
   onInput(e) {
@@ -64,10 +83,10 @@ Page({
   },
   // 输入完成以后
   onConfirm(e) {
-    this.sub();
+    this.searchSchool();
   },
-  // 表单提交
-  sub(e) {
+  // 搜索学校
+  searchSchool(e) {
     var that = this;
     var inputVal = that.data.inputVal;   // 输入值传递给后台获取搜索结果
     var url = "/miniprogram/getAllSchools";
@@ -81,39 +100,5 @@ Page({
         schoolList: res.res,
       })
     })
-  },
-  // 获取学校 - 扫码用户选择
-  getSchool() {
-    let url = '/alipay/miniprogram/register'
-    let params = { schoolId: this.data.scId, account: this.data.userId, accessToken: this.data.actoken }
-    app.req.requestPostApi(url, params, this, res => {
-      my.reLaunch({
-        url: '/page/index/index',
-      });
-    })
-  },
-  // 获取学校 - 非扫码进入用户选择
-  selectSchool(e) {
-    let text = e.target.dataset.text;
-    let url = '/alipay/miniprogram/register'
-    let params = { schoolId: e.target.id, account: this.data.userId, accessToken: this.data.actoken }
-    let instructions = '您选中的是' + text + '选错学校设备将无法使用哦'
-    this.setData({ clicked: e.target.id })
-    // 网络请求'
-    my.confirm({
-      title: '温馨提示',
-      content: instructions,
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      success: (res) => {
-        if (res.confirm) {
-          app.req.requestPostApi(url, params, this, res => {
-            my.reLaunch({
-              url: '/page/index/index',
-            });
-          })
-        }
-      },
-    });
   },
 })

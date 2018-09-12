@@ -42,6 +42,17 @@ Page({
     this.getAuthCode();
     this.getInfo();
   },
+  onShow() {
+    let userId = my.getStorageSync({
+      key: 'userId',
+    }).data;
+    this.setData({ userId: userId })
+    if (userId !== null) {
+      this.getAdInfo();
+    } else {
+      return false;
+    }
+  },
   getAuthCode() {
     my.getAuthCode({
       scopes: 'auth_base',
@@ -86,14 +97,10 @@ Page({
         data: res.res.is_baitu_worker
       });
       my.setStorage({
-        key: 'telephone',
-        data: res.res.phone,
-      });
-      my.setStorageSync({
-        key: 'id',
+        key: 'stuId',
         data: res.res.id,
       });
-      my.setStorageSync({
+      my.setStorage({
         key: 'cardNo',
         data: res.res.cardNo,
       });
@@ -110,7 +117,6 @@ Page({
             url: res.data
           });
         } else {
-          this.getAdInfo();
           my.getStorage({
             key: 'mac',
             success: (res) => {

@@ -4,6 +4,7 @@ Page({
     userId: 0,
     userName: '',
     money: 100,
+    stuId: '',
     show: false,
     txtArray: [
       {
@@ -111,14 +112,8 @@ Page({
    * 充值button事件
    */
   recharge() {
-    my.getStorage({
-      key: 'id',
-      success: function(res) {
-        that.setData({
-          sa_id: res.data
-        })
-      },
-    });
+    let stuId = my.getStorageSync({ key: 'stuId', }).data;
+    this.setData({ stuId: stuId })
     if (this.data.money == 0) {//充值数目不为空
       my.alert({
         title: '提示',
@@ -130,7 +125,7 @@ Page({
     var url = '/miniprogram/alipay';
     var params = {
       userName: that.data.userId,
-      stuId: that.data.sa_id,
+      stuId: that.data.stuId,
       money: that.data.money,
     }
     // 网络请求
@@ -173,10 +168,10 @@ Page({
   onLoad: function(options) {
     var that = this;
     my.getStorage({
-      key: 'id',
+      key: 'stuId',
       success: function(res) {
         that.setData({
-          sa_id: res.data
+          stuId: res.data
         })
       },
     });
@@ -189,4 +184,8 @@ Page({
       },
     })
   },
+  // 键盘监听完成
+  confirmMoney(){
+    this.recharge()
+  }
 });
