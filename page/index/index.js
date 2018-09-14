@@ -42,17 +42,6 @@ Page({
     this.getAuthCode();
     this.getInfo();
   },
-  onShow() {
-    let userId = my.getStorageSync({
-      key: 'userId',
-    }).data;
-    this.setData({ userId: userId })
-    if (userId !== null) {
-      this.getAdInfo();
-    } else {
-      return false;
-    }
-  },
   getAuthCode() {
     my.getAuthCode({
       scopes: 'auth_base',
@@ -108,6 +97,8 @@ Page({
     })
   },
   getCookie() {
+    /* 调用主页广告位接口 */ 
+    this.getAdInfo();
     /* 缓存值判断用户什么入口进入 跳转相应页面 */
     my.getStorage({
       key: 'page',

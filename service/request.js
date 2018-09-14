@@ -61,7 +61,6 @@ function requestApi(url, params, method, headers, sourceObj, successFun, failFun
     headerOptions["Content-Type"] = 'multipart/form-data;charset=UTF-8';
   }
   if(url == '/miniprogram/getAllSchools'){
-    console.log('执行获取学校列表')
   } else {
      params = JSON.stringify(params)
   }
