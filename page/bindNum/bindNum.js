@@ -54,7 +54,7 @@ Page({
       })
     }
     // 网络请求
-    if (telephone !== '' || telephone !== null) {
+    if (telephone != "") {
       app.req.requestPostApi(url, params, this, (res) => {
         my.showToast({
           content: '验证码已发送',
@@ -97,7 +97,7 @@ Page({
     let url = '/alipay/miniprogram/bind_phone'
     let params = { userName: userId, phoneNum: telephone, smsCode: code }
     // 网络请求
-    if (telephone !== '' && code !== '') {
+    if (telephone != '' && code != '') {
       app.req.requestPostApi(url, params, this, res => {
         my.confirm({
           title: '温馨提示',
@@ -108,13 +108,13 @@ Page({
           },
         });
       })
-    } else if (code !== '') {
+    } else if (code != '') {
       my.showToast({
         content: '输入手机号啦',
         type: 'fail',
         duration: 1000,
       });
-    } else if (telephone !== '') {
+    } else if (telephone != '') {
       my.showToast({
         content: '输入验证码啦',
         type: 'fail',

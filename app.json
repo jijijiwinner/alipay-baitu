@@ -1,25 +1,26 @@
 {
-  "pages": [ 
-    "page/index/index", 
-    "page/mine/mine",     
-    "page/person/person", 
+  "pages": [
+    "page/index/index",
+    "page/mine/mine",
+    "page/person/person",
     "page/wallet/wallet",
     "page/comment_list/comment_list",
     "page/comment/comment",
     "page/swingCard/swingCard",
-    "page/cardReader/cardReader",    
-    "page/bindNum/bindNum",    
+    "page/cardReader/cardReader",
+    "page/bindNum/bindNum",
     "page/record/record",
-    "page/groundRecharge/groundRecharge",                     
+    "page/groundRecharge/groundRecharge",
     "page/refund/refund",
-    "page/recharge/recharge", 
-    "page/school/school",    
-    "page/schoolNew/schoolNew",    
-    "page/operation/operation",            
+    "page/recharge/recharge",
+    "page/school/school",
+    "page/schoolNew/schoolNew",
+    "page/operation/operation",
     "page/waterThat/waterThat",
     "page/cardThat/cardThat",
     "page/webview/webview",
-    "page/baituH5/baituH5"    
+    "page/baituH5/baituH5",
+    "page/redEnvelope/redEnvelope"
   ],
   "window": {
     "enableWK": "YES",

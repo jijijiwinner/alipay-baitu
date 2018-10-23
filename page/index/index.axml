@@ -44,5 +44,28 @@
       </block>
       <view catchTap='cancel' id="cancelWater">取消</view>
     </view>
+    <view class="payment" catchTap ='choosePay'>
+      <view>
+        <view>支付方式</view>
+        <view class="payWay">{{paySelect}}</view>
+        <image style='width:40rpx;height:40rpx;' src="../../image/jiantou.png" mode="widthFix" />
+      </view>
+      <block a:for="{{payList}}" a:key='item.type'>
+        <view class="payHeader" a:if="{{payMenu}}">
+          <view>
+            <image style= 'width:60rpx;height:60rpx;'
+             src="{{item.icon_url}}" mode="widthFix" />
+          </view>
+          <view catchTap='selectPay' 
+            data-text='{{item.description}}' 
+            id='{{item.type}}'>
+            {{item.description}}
+          </view>
+        </view>
+      </block>
+    </view>  
+    <view class="redEnve" catchTap='goRedEnv'>
+      <image src="../../image/hongbao.png" mode="widthFix" />
+    </view>
   </view>
 </view>

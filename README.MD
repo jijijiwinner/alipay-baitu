@@ -46,6 +46,7 @@
 │   ├── swingCard               // 刷卡绑定页
 │   ├── wallet                  // 钱包页
 │   ├── webview                 // 内嵌H5页
+│   ├── redEnvelope             // 内嵌广告红包H5页
 └──
 </pre>
 

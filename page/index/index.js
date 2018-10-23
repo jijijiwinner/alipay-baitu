@@ -22,6 +22,12 @@ Page({
     showMode: false,
     showClose: false,
 
+    payMenu: false, // 支付下拉菜单显示隐藏
+    paySelect: '', // 选中的文字
+    payModel: '',  // 支付类型
+    payList: [], // 支付方式
+    payTop: false,
+
     hotMode: [],//模式
     modeName: '',
     waterType: 1,//选择开水器模式
@@ -36,6 +42,58 @@ Page({
 
     state: 0,//状态，0：空闲，1：运行中
     tradeNO: '',//订单号
+  },
+  // 跳转到红包页面
+  goRedEnv() {
+    my.navigateTo({
+      url: '/page/redEnvelope/redEnvelope'
+    });
+  },
+  // 打开支付类型菜单
+  choosePay() {
+    let payMenu = this.data.payMenu;
+    this.setData({
+      payMenu: (!this.data.payMenu),
+    })
+  },
+  // 选择支付类型
+  selectPay(e) {
+    let payModel = e.currentTarget.id;
+    let paySelect = e.currentTarget.dataset.text;
+    let userId = my.getStorageSync({
+      key: 'userId', // 缓存数据的key
+    }).data;
+    this.setData({
+      payMenu: false,
+      paySelect: paySelect,
+      payModel: payModel,
+      userId: userId
+    })
+    my.setStorageSync({
+      key: 'payMethod', // 缓存数据的key
+      data: paySelect, // 要缓存的数据
+    });
+    my.setStorageSync({
+      key: 'payModel', // 缓存数据的key
+      data: payModel, // 要缓存的数据
+    });
+
+    if (payModel == 3) {
+      let url = '/alipay/miniprogram/get_withhold_sign_str';
+      let params = {
+        userName: userId
+      }
+      app.req.requestPostApi(url, params, this, res => {
+        let signStr = res.res;
+        // 获取签约字符串 返回结果
+        my.paySignCenter({
+          signStr: signStr,
+          success: res => {
+            console.log(JSON.stringify(res));
+          }
+        })
+      })
+    }
   },
   //调用获取屏幕宽高以及授权方法
   onLoad() {
@@ -97,7 +155,7 @@ Page({
     })
   },
   getCookie() {
-    /* 调用主页广告位接口 */ 
+    /* 调用主页广告位接口 */
     this.getAdInfo();
     /* 缓存值判断用户什么入口进入 跳转相应页面 */
     my.getStorage({
@@ -152,9 +210,16 @@ Page({
   },
   // 获取模式
   getType() {
+    let payMethod = my.getStorageSync({
+      key: 'payMethod', // 缓存数据的key
+    }).data;
+    let payModel = my.getStorageSync({
+      key: 'payModel', // 缓存数据的key
+    }).data;
     var that = this;
     let userId = this.data.userId;
     var time = new Date().getTime();
+    this.setData({ paySelect: payMethod, payModel: payModel })
     var sign = app.common.createSign({
       mac: that.data.mac,
       timestamp: time,
@@ -173,6 +238,7 @@ Page({
         showMode: true,
         hotMode: res.res.modeList,
         mac: res.res.mapping,
+        payList: res.res.pay_type_list
       })
     })
   },
@@ -241,6 +307,11 @@ Page({
         if (res.res.isPollingEnable) {
           polling = setInterval(() => {
             app.req.requestPostApi('/miniprogram/machine/queryHotState', param_polling, this, res => {
+              my.alert({
+                content: JSON.stringify(res),
+              });
+              console.log(res);
+              console.warn(JSON.stringify(res));
               if (res.res === 1) {
                 clearInterval(polling);
                 clearInterval(interval);
@@ -378,286 +449,113 @@ Page({
   // 开水器预支付
   openHot() {
     let userId = this.data.userId;
+    let payModel = this.data.payModel;
     let mapping = this.data.mac;
     let modeId = this.data.waterType;
     let url = '/alipay/miniprogram/facepay';
-    let params = { alipayPid: userId, mapping: mapping, modeId: modeId };
-
-    app.req.requestPostApi(url, params, this, res => {
-      let tradeNO = res.res.tradeNo;
-      let balanceOf = res.res.is_money_enough;
-      let withHold = res.res.is_alipay_withhold_sign;
-      // 判断 用户余额是否充足  为true 
-      if (balanceOf) {
-        // 为true 直接开启设备（不需要拉起支付窗口）
-        this.signed(tradeNO)
-        // 用户余额不充足的情况下 为false
-      } else {
-        // 判断用户是否签约免密支付协议
-        if (withHold) {
-          // 为true的时候 直接开启设备(不需要开拉起支付窗口)
-          this.signed(tradeNO)
-          // 为false的时候 提醒用户签约免密支付协议
-        } else {
-          my.confirm({
-            title: '温馨提示',
-            content: '您是否开通免密支付?',
-            confirmButtonText: '马上签约',
-            cancelButtonText: '暂不需要',
-            success: res => {
-              // 用户点击马上签约以后 执行签约功能 跳转至内嵌页面
-              if (res.confirm) {
-                let url = '/alipay/miniprogram/get_withhold_sign_str';
-                let userId = this.data.userId;
-                let params = { userName: userId }
-                // 选择签约后的网络请求
-                app.req.requestPostApi(url, params, this, res => {
-                  let signStr = res.res;
-                  // 获取签约字符串 返回结果
-                  my.paySignCenter({
-                    signStr: signStr,
-                    success: res => {
-                      console.log(JSON.stringify(res));
-                    }
-                  });
-                })
-              } else {
-                // 未签约选择后 调用拉起支付窗口进行支付
-                this.notSigned(tradeNO);
-              }
-            },
-          })
-        }
-      }
-
-    })
-  },
-  // 关闭开水器
-  endHot() {
-    var that = this;
-    let userId = this.data.userId;
-    let url = '/miniprogram/machine/stophot';
-    var time = new Date().getTime();
-    var sign = app.common.createSign({
-      mac: that.data.mac,
-      timestamp: time,
-      userName: userId
-    });
-    var params = {
-      userName: userId,
-      timestamp: time,
-      mac: that.data.mac,
-      sign: sign
+    let params = {
+      alipayPid: userId, mapping: mapping, modeId: modeId, pay_type: payModel
     };
     app.req.requestPostApi(url, params, this, res => {
-      clearInterval(interval);
-      clearInterval(polling);
-      that.setData({
-        showClose: false
-      });
-    }, function(res) {
-      clearInterval(interval)
-      that.setData({
-        showClose: false
-      });
-    })
-
-  },
-  // 直接出水模式打水动画
-  getAraw(t) {
-    var that = this;
-    var step = 2;
-    interval = setInterval(function() {
-      var start = Math.PI * 1.5, end, n = t; //初始角度，终止角度,时间
-      if (step <= n) {
-        end = step / n * 2 * Math.PI + 3 / 2 * Math.PI;
-        that.draw(start, end)
-        step++;
+      let tradeNO = res.res.tradeNo;
+      // payModel 1 = 余额支付
+      if (payModel && payModel == 1) {
+        this.signed(tradeNO)
+        // payModel 2 = 当面付
+      } else if (payModel && payModel === 2) {
+        this.notSigned(tradeNO);
+        // payModel 3 = 免密支付
+      } else if (payModel && payModel == 3) {
+        this.signed(tradeNO)
       } else {
-        clearInterval(interval)
-        clearInterval(polling)
-        that.setData({
-          showClose: false
-        })
-        my.confirm({
-          title: "温馨提示",
-          content: '再打一次',
-          confirmButtonText: '确定',
-          success: (res) => {
-            if (res.confirm) {
-              that.openHot();
-            }
-          },
+        my.alert({
+          title: '提示',
+          content: '请选择支付方式'
         });
       }
-    }, 1000)
+    })
   },
-  // 洗衣机 包含签约
+  // 洗衣机
   getWasher() {
     let that = this;
     let userId = this.data.userId;
+    let payModel = this.data.payModel;
     let mapping = this.data.mac;
     let modeId = this.data.WasherType;
     let url = '/alipay/miniprogram/facepay';
-    let params = { alipayPid: userId, mapping: mapping, modeId: modeId };
+    let params = { alipayPid: userId, mapping: mapping, modeId: modeId, pay_type: payModel };
     app.req.requestPostApi(url, params, this, res => {
       let tradeNO = res.res.tradeNo;
-      let balanceOf = res.res.is_money_enough;
-      let withHold = res.res.is_alipay_withhold_sign;
-      // 判断 用户余额是否充足  为true 
-      if (balanceOf) {
-        // 为true 直接开启设备（不需要拉起支付窗口）
-        this.generalPay(tradeNO)
-        // 用户余额不充足的情况下 为false
+      // payModel 1 = 余额支付
+      if (payModel && payModel == 1) {
+        this.signed(tradeNO)
+        // payModel 2 = 当面付
+      } else if (payModel && payModel === 2) {
+        this.notSigned(tradeNO);
+        // payModel 3 = 免密支付
+      } else if (payModel && payModel == 3) {
+        this.signed(tradeNO)
       } else {
-        // 判断用户是否签约免密支付协议
-        if (withHold) {
-          // 为true的时候 直接开启设备(不需要开拉起支付窗口)
-          this.generalPay(tradeNO)
-          // 为false的时候 提醒用户签约免密支付协议
-        } else {
-          my.confirm({
-            title: '温馨提示',
-            content: '您是否开通免密支付?',
-            confirmButtonText: '马上签约',
-            cancelButtonText: '暂不需要',
-            success: res => {
-              // 用户点击马上签约以后 执行签约功能 跳转至内嵌页面
-              if (res.confirm) {
-                let url = '/alipay/miniprogram/get_withhold_sign_str';
-                let userId = this.data.userId;
-                let params = { userName: userId }
-                // 选择签约后的网络请求
-                app.req.requestPostApi(url, params, this, res => {
-                  let signStr = res.res;
-                  // 获取签约字符串 返回结果
-                  my.paySignCenter({
-                    signStr: signStr,
-                    success: res => {
-                      console.log(JSON.stringify(res));
-                    }
-                  });
-                })
-              } else {
-                // 未签约选择后 调用拉起支付窗口进行支付
-                this.generalNopay(tradeNO);
-              }
-            },
-          })
-        }
+        my.alert({
+          title: '提示',
+          content: '请选择支付方式'
+        });
       }
     })
   },
-  // 吹风机 包含签约
+  // 吹风机
   getBlower() {
     let that = this;
     let userId = this.data.userId;
+    let payModel = this.data.payModel;
     let mapping = this.data.mac;
     let modeId = this.data.blowerType;
     let url = '/alipay/miniprogram/facepay';
-    let params = { alipayPid: userId, mapping: mapping, modeId: modeId };
-
+    let params = { alipayPid: userId, mapping: mapping, modeId: modeId, pay_type: payModel };
     app.req.requestPostApi(url, params, this, res => {
       let tradeNO = res.res.tradeNo;
-      let balanceOf = res.res.is_money_enough;
-      let withHold = res.res.is_alipay_withhold_sign;
-      // 判断 用户余额是否充足  为true 
-      if (balanceOf) {
-        // 为true 直接开启设备（不需要拉起支付窗口）
-        this.generalPay(tradeNO)
-        // 用户余额不充足的情况下 为false
+      // payModel 1 = 余额支付
+      if (payModel && payModel == 1) {
+        this.signed(tradeNO)
+        // payModel 2 = 当面付
+      } else if (payModel && payModel === 2) {
+        this.notSigned(tradeNO);
+        // payModel 3 = 免密支付
+      } else if (payModel && payModel == 3) {
+        this.signed(tradeNO)
       } else {
-        // 判断用户是否签约免密支付协议
-        if (withHold) {
-          // 为true的时候 直接开启设备(不需要开拉起支付窗口)
-          this.generalPay(tradeNO)
-          // 为false的时候 提醒用户签约免密支付协议
-        } else {
-          my.confirm({
-            title: '温馨提示',
-            content: '您是否开通免密支付?',
-            confirmButtonText: '马上签约',
-            cancelButtonText: '暂不需要',
-            success: res => {
-              // 用户点击马上签约以后 执行签约功能 跳转至内嵌页面
-              if (res.confirm) {
-                let url = '/alipay/miniprogram/get_withhold_sign_str';
-                let userId = this.data.userId;
-                let params = { userName: userId }
-                // 选择签约后的网络请求
-                app.req.requestPostApi(url, params, this, res => {
-                  let signStr = res.res;
-                  // 获取签约字符串 返回结果
-                  my.paySignCenter({
-                    signStr: signStr,
-                    success: res => {
-                      console.log(JSON.stringify(res));
-                    }
-                  });
-                })
-              } else {
-                // 未签约选择后 调用拉起支付窗口进行支付
-                this.generalNopay(tradeNO);
-              }
-            },
-          })
-        }
+        my.alert({
+          title: '提示',
+          content: '请选择支付方式'
+        });
       }
     })
   },
-  // 烘干机 包含签约
+  // 烘干机
   getDryer() {
     let that = this;
     let userId = this.data.userId;
+    let payModel = this.data.payModel;
     let mapping = this.data.mac;
     let modeId = this.data.dryerType;
     let url = '/alipay/miniprogram/facepay';
-    let params = { alipayPid: userId, mapping: mapping, modeId: modeId };
+    let params = { alipayPid: userId, mapping: mapping, modeId: modeId, pay_type: payModel };
     app.req.requestPostApi(url, params, this, res => {
       let tradeNO = res.res.tradeNo;
-      let balanceOf = res.res.is_money_enough;
-      let withHold = res.res.is_alipay_withhold_sign;
-      // 判断 用户余额是否充足  为true 
-      if (balanceOf) {
-        // 为true 直接开启设备（不需要拉起支付窗口）
-        this.generalPay(tradeNO)
-        // 用户余额不充足的情况下 为false
+      // payModel 1 = 余额支付
+      if (payModel && payModel == 1) {
+        this.signed(tradeNO)
+        // payModel 2 = 当面付
+      } else if (payModel && payModel === 2) {
+        this.notSigned(tradeNO);
+        // payModel 3 = 免密支付
+      } else if (payModel && payModel == 3) {
+        this.signed(tradeNO)
       } else {
-        // 判断用户是否签约免密支付协议
-        if (withHold) {
-          // 为true的时候 直接开启设备(不需要开拉起支付窗口)
-          this.generalPay(tradeNO)
-          // 为false的时候 提醒用户签约免密支付协议
-        } else {
-          my.confirm({
-            title: '温馨提示',
-            content: '您是否开通免密支付?',
-            confirmButtonText: '马上签约',
-            cancelButtonText: '暂不需要',
-            success: res => {
-              // 用户点击马上签约以后 执行签约功能 跳转至内嵌页面
-              if (res.confirm) {
-                let url = '/alipay/miniprogram/get_withhold_sign_str';
-                let userId = this.data.userId;
-                let params = { userName: userId }
-                // 选择签约后的网络请求
-                app.req.requestPostApi(url, params, this, res => {
-                  let signStr = res.res;
-                  // 获取签约字符串 返回结果
-                  my.paySignCenter({
-                    signStr: signStr,
-                    success: res => {
-                      console.log(JSON.stringify(res));
-                    }
-                  });
-                })
-              } else {
-                // 未签约选择后 调用拉起支付窗口进行支付
-                this.generalNopay(tradeNO);
-              }
-            },
-          })
-        }
+        my.alert({
+          title: '提示',
+          content: '请选择支付方式'
+        });
       }
     })
   },
@@ -728,6 +626,66 @@ Page({
   // 开启烘干机 调用预支付函数
   openDryer() {
     this.getDryer();
+  },
+  // 关闭开水器
+  endHot() {
+    var that = this;
+    let userId = this.data.userId;
+    let url = '/miniprogram/machine/stophot';
+    var time = new Date().getTime();
+    var sign = app.common.createSign({
+      mac: that.data.mac,
+      timestamp: time,
+      userName: userId
+    });
+    var params = {
+      userName: userId,
+      timestamp: time,
+      mac: that.data.mac,
+      sign: sign
+    };
+    app.req.requestPostApi(url, params, this, res => {
+      clearInterval(interval);
+      clearInterval(polling);
+      that.setData({
+        showClose: false
+      });
+    }, function(res) {
+      clearInterval(interval)
+      that.setData({
+        showClose: false
+      });
+    })
+
+  },
+  // 直接出水模式打水动画
+  getAraw(t) {
+    var that = this;
+    var step = 2;
+    interval = setInterval(function() {
+      var start = Math.PI * 1.5, end, n = t; //初始角度，终止角度,时间
+      if (step <= n) {
+        end = step / n * 2 * Math.PI + 3 / 2 * Math.PI;
+        that.draw(start, end)
+        step++;
+      } else {
+        clearInterval(interval)
+        clearInterval(polling)
+        that.setData({
+          showClose: false
+        })
+        my.confirm({
+          title: "温馨提示",
+          content: '再打一次',
+          confirmButtonText: '确定',
+          success: (res) => {
+            if (res.confirm) {
+              that.openHot();
+            }
+          },
+        });
+      }
+    }, 1000)
   },
   // 绘制图形
   draw(s, e) {

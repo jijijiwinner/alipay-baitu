@@ -90,3 +90,47 @@ span{
   display:inline-block;
   margin-left: 10rpx; 
 }
+.payment {
+  z-index: 30;  
+  position: absolute;
+  top: 50%;
+  /* top: 60%;  */
+  left: 10%;
+  width: 80%;
+  border: 1rpx solid #D9EFFA;  
+  border-radius: 20rpx;
+}
+.payment >view {
+  padding: 20rpx;
+}
+.payment > view > .payWay {
+  padding-left: 190rpx;
+}
+.payment >view:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15rpx;
+}
+.payment >view:first-child >image{
+  width: 30rpx;
+  height: 30rpx;
+}
+.payHeader {
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx solid #bdc1c3;
+}
+.payHeader >view:first-child {
+  margin-right: 20rpx;
+}
+.redEnve {
+  position: absolute;
+  bottom: 252rpx;
+  right: 32rpx;
+  z-index: 20;
+}
+.redEnve >image {
+  width: 90rpx;
+  height: 110rpx;
+}
