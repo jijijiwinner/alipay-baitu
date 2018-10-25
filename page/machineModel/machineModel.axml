@@ -1,0 +1,87 @@
+<view class="machine-main">
+  <!-- 头部区域 -->
+  <view class="machine-header">
+    <view>
+      <image src="" mode="widthFix" />
+    </view>
+    <view>注意：将装水容器置于开水器上，点击开始打水,请勿手持容器，以免烫伤</view>
+  </view>
+  <!-- 选择模式区域 -->
+  <view class="machine-mid" a:if="{{is_baitu_worker}}">
+    <view>选择{{modeName}}模式{{mac}}</view>
+    <view class="model">
+      <block a:for="{{hotMode}}" a:for-index="index" a:key='index'>
+        <view id="{{item.modeId}}" data-index='{{index}}' catchTap='getModeType' class="{{selected == index ? 'select':'normal'}} ">          {{item.name}}        </view>
+      </block>
+    </view>
+    <!-- 红包按钮 -->
+    <view class="redEnve" catchTap='goRedEnv'>
+      <image src="../../image/hongbao.png" mode="widthFix" />
+    </view>
+  </view>
+  <!-- 非内部员工 -->
+  <view class="machine-mid" a:else>
+    <view>选择{{modeName}}模式</view>
+    <view class="model">
+      <block a:for="{{hotMode}}" a:for-index="index" a:key='index'>
+        <view id="{{item.modeId}}" data-index='{{index}}' catchTap='getModeType' class="{{selected == index ? 'select':'normal'}} ">         {{item.name}}        </view>
+      </block>
+    </view>
+    <!-- 红包按钮 -->
+    <view class="redEnve" catchTap='goRedEnv'>
+      <image src="../../image/hongbao.png" mode="widthFix" />
+    </view>
+  </view>
+  <!-- 支付方式选择 -->
+  <view class="machine-footer">
+    <!-- 支付方式 -->
+    <view class="machine-pay" catchTap='openPay'>
+      <view>支付方式</view>
+      <view>{{payMethod}}</view>
+      <image src="../../image/jiantou.png" mode="aspectFit" />
+    </view>
+    <!-- 支付方式弹出框 -->
+    <popup class="popUp" onClose="onPopupClose" show="{{showBottom}}" position="bottom">
+      <view class="upMain">
+        <block a:for="{{payList}}" a:key='item.type'>
+          <view class="payHeader" catchTap='selectPay' id='{{item.type}}' data-text='{{item.description}}' >
+            <view class="header-top">
+              <image class="payImg" src="{{item.icon_url}}" mode="widthFix" />
+            </view>
+            <!-- 默认列表 -->
+            <view class="header-bottom" data-text='{{item.description}}' id='{{item.type}}'>{{item.description}}</view>
+            <!-- 类型等于1 显示余额 -->
+            <view a:if="{{item.type == 1  }}" class="header-bottom" data-text='{{item.description}}' id='{{item.type}}'>
+              <text>(￥{{money}})</text>
+            </view>
+            <!-- 类型等于1 满足金额少于0.2 显示余额不足 -->
+            <view a:if="{{item.type == 1 && accMoney }}" class="header-bottom" data-text='{{item.description}}' id='{{item.type}}'>
+              <text style='font-size:24rpx;color:red;'>余额不足</text>
+            </view>
+            <!-- 类型2 -->
+            <view a:if="{{item.type == 2}}" class="typeTwo" data-text='{{item.description}}' id='{{item.type}}'>
+              <text style='font-size:24rpx;color:red;'>红包</text>
+            </view>
+            <!-- 类型3 开通了免密支付的 -->
+            <view>
+              <view a:if="{{item.type == 3 && signing}}" class="typeThree" data-text='{{item.description}}' id='{{item.type}}'>
+                <text>推荐</text>
+              </view>
+            </view>
+            <!-- 未开通免密支付 -->
+            <view a:if="{{item.type == 3 && !signing}}" class="typeThree" data-text='{{item.description}}' id='{{item.type}}'>
+              <text>推荐</text>
+              <view class="freePay" id='{{item.type}}' >
+                <view id='{{item.type}}'>去开通</view>
+                <image id='{{item.type}}' class="threeImg" src="../../image/jiantou1.png" mode="aspectFit" />
+              </view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </popup>
+    <view class="btn">
+      <button class="bg_color1" catchTap="openMachine">开启设备</button>
+    </view>
+  </view>
+</view>

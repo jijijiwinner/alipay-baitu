@@ -1,6 +1,7 @@
 {
   "pages": [
     "page/index/index",
+    "page/machineModel/machineModel",        
     "page/mine/mine",
     "page/person/person",
     "page/wallet/wallet",

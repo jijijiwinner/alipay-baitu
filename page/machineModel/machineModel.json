@@ -1,0 +1,6 @@
+{
+  "defaultTitle": "选择模式",
+   "usingComponents": {
+    "popup": "mini-antui/es/popup/index"
+  }
+}

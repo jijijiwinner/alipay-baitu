@@ -69,7 +69,7 @@ canvas{
   left: 10%;
   width: 80%;
 }
-.detail>view{
+.detail>.model{
   border-bottom:solid 1rpx #eeeeee;
   height:100rpx;
   line-height: 100rpx;
@@ -91,28 +91,24 @@ span{
   margin-left: 10rpx; 
 }
 .payment {
-  z-index: 30;  
-  position: absolute;
-  top: 50%;
-  /* top: 60%;  */
-  left: 10%;
-  width: 80%;
+  z-index: 30;
+  margin-top: 20rpx;
   border: 1rpx solid #D9EFFA;  
   border-radius: 20rpx;
 }
-.payment >view {
+.detail > .payment >view {
   padding: 20rpx;
 }
-.payment > view > .payWay {
+.detail > .payment > view > .payWay {
   padding-left: 190rpx;
 }
-.payment >view:first-child {
+.detail > .payment >view:first-child {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 15rpx;
 }
-.payment >view:first-child >image{
+.detail > .payment >view:first-child >image{
   width: 30rpx;
   height: 30rpx;
 }
@@ -121,12 +117,16 @@ span{
   align-items: center;
   border-bottom: 1rpx solid #bdc1c3;
 }
+.payHeader >view >image {
+  width:60rpx;
+  height:60rpx;
+}
 .payHeader >view:first-child {
   margin-right: 20rpx;
 }
 .redEnve {
-  position: absolute;
-  bottom: 252rpx;
+  position: fixed;
+  bottom: 100rpx;
   right: 32rpx;
   z-index: 20;
 }

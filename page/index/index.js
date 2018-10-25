@@ -2,6 +2,8 @@ const app = getApp();
 var interval; //  动画倒计时
 var polling;  //  开启动画轮询
 var QR = require('../../service/qrcode.js');
+const WxNotificationCenter = require('../../utils/WxNotificationCenter.js')
+
 Page({
   data: {
     screenHeight: 0,
@@ -27,78 +29,32 @@ Page({
     payModel: '',  // 支付类型
     payList: [], // 支付方式
     payTop: false,
+    signing: '',
+    modelId: '',
 
     hotMode: [],//模式
     modeName: '',
-    waterType: 1,//选择开水器模式
-    WasherType: 1,//选择洗衣机模式
-    blowerType: 1,//选择吹风机模式
-    dryerType: 1,//选择烘干机模式
-
-    dryPrice: '',//单脱
-    fastPrice: '',//快速
-    stdPrice: '',//标准
-    bigPrice: '',//大物
 
     state: 0,//状态，0：空闲，1：运行中
     tradeNO: '',//订单号
   },
-  // 跳转到红包页面
-  goRedEnv() {
-    my.navigateTo({
-      url: '/page/redEnvelope/redEnvelope'
-    });
-  },
-  // 打开支付类型菜单
-  choosePay() {
-    let payMenu = this.data.payMenu;
-    this.setData({
-      payMenu: (!this.data.payMenu),
-    })
-  },
-  // 选择支付类型
-  selectPay(e) {
-    let payModel = e.currentTarget.id;
-    let paySelect = e.currentTarget.dataset.text;
-    let userId = my.getStorageSync({
-      key: 'userId', // 缓存数据的key
-    }).data;
-    this.setData({
-      payMenu: false,
-      paySelect: paySelect,
-      payModel: payModel,
-      userId: userId
-    })
-    my.setStorageSync({
-      key: 'payMethod', // 缓存数据的key
-      data: paySelect, // 要缓存的数据
-    });
-    my.setStorageSync({
-      key: 'payModel', // 缓存数据的key
-      data: payModel, // 要缓存的数据
-    });
-
-    if (payModel == 3) {
-      let url = '/alipay/miniprogram/get_withhold_sign_str';
-      let params = {
-        userName: userId
-      }
-      app.req.requestPostApi(url, params, this, res => {
-        let signStr = res.res;
-        // 获取签约字符串 返回结果
-        my.paySignCenter({
-          signStr: signStr,
-          success: res => {
-            console.log(JSON.stringify(res));
-          }
-        })
-      })
-    }
-  },
   //调用获取屏幕宽高以及授权方法
-  onLoad() {
+  onLoad(options) {
     this.getAuthCode();
     this.getInfo();
+    var that = this;
+    WxNotificationCenter.addNotification('NotificationName', that.didNotification, that)
+  },
+  // 通知处理
+  didNotification: function(obj) {
+    //更新数据
+    var that = this;
+    that.observer.setData({
+      modelId: obj.modelId,
+      modeType: obj.modeType,
+      payModel: obj.payModel
+    })
+    that.observer.facePay();
   },
   getAuthCode() {
     my.getAuthCode({
@@ -173,7 +129,9 @@ Page({
                 this.setData({
                   mac: res.data
                 })
-                this.getType();
+                my.navigateTo({
+                  url: '/page/machineModel/machineModel'
+                });
               }
             },
           });
@@ -204,152 +162,119 @@ Page({
       success: (res) => {
         mac = res.code;
         that.setData({ mac: mac })
-        that.getType();
+        my.setStorageSync({
+          key: 'mac', // 缓存数据的key
+          data: res.code, // 要缓存的数据
+        });
+        my.navigateTo({ url: '/page/machineModel/machineModel' });
       }
     });
   },
-  // 获取模式
-  getType() {
-    let payMethod = my.getStorageSync({
-      key: 'payMethod', // 缓存数据的key
-    }).data;
-    let payModel = my.getStorageSync({
-      key: 'payModel', // 缓存数据的key
-    }).data;
-    var that = this;
+  // facePay
+  facePay() {
     let userId = this.data.userId;
-    var time = new Date().getTime();
-    this.setData({ paySelect: payMethod, payModel: payModel })
-    var sign = app.common.createSign({
-      mac: that.data.mac,
-      timestamp: time,
-      userName: userId
-    });
-    var params = {
-      mac: that.data.mac,
-      timestamp: time,
-      userName: userId,
-      sign: sign
-    }
-    app.req.requestPostApi('/miniprogram/machine/scan', params, this, function(res) {
-      that.setData({
-        modeType: res.res.type,
-        modeName: res.res.name,
-        showMode: true,
-        hotMode: res.res.modeList,
-        mac: res.res.mapping,
-        payList: res.res.pay_type_list
-      })
+    let payModel = this.data.payModel;
+    let mapping = this.data.mac;
+    let modelId = this.data.modelId;
+    let url = '/alipay/miniprogram/facepay';
+    let params = {
+      alipayPid: userId, mapping: mapping, modeId: modelId, pay_type: payModel
+    };
+    app.req.requestPostApi(url, params, this, res => {
+      my.removeStorageSync({
+        key: 'mac', // 缓存数据的key
+      }).data;
+      let tradeNO = res.res.tradeNo;
+      // payModel 1 = 余额支付
+      if (payModel == 1) {
+        this.signed(tradeNO)
+        // payModel 2 = 当面付
+      } else if (payModel == 2) {
+        this.notSigned(tradeNO);
+        // payModel 3 = 免密支付
+      } else if (payModel == 3) {
+        this.signed(tradeNO)
+      }
     })
   },
-  // 取消功能
-  cancel(e) {
-    this.setData({
-      showMode: false,
-    })
-  },
-  /* 获取机器模式 */
-  getModeType(e) {
-    switch (this.data.modeType) {
-      case 1:
-        this.setData({
-          waterType: e.target.id
-        })
-        this.openHot();
-        break;
-      case 2:
-        this.setData({
-          WasherType: e.target.id
-        })
-        this.openWasher();
-        break;
-      case 3:
-        this.setData({
-          blowerType: e.target.id
-        })
-        this.openBlower();
-        break;
-      case 4:
-        this.setData({
-          dryerType: e.target.id
-        })
-        this.openDryer();
-        break;
-    }
-  },
-  /* 开水器支付(已签约免密协议的时候调用 - 不需要拉起收银台开启机器) */
+  /* 不需要拉起收银台开启机器 */
   signed(tradeNO) {
     let url = '/alipay/miniprogram/facepay_open_machine';
     let userId = this.data.userId;
+    let modeType = this.data.modeType;
     let parmas = { tradeNo: tradeNO, alipayPid: userId };
     app.req.requestPostApi(url, parmas, this, res => {
       var that = this;
-      if (res.res.openType === 1) {
-        var time = res.res.missionTime;
-        that.setData({
-          showMode: false,
-          showClose: true
-        });
-        that.getAraw(time);
-        //轮询查询开水器状态
-        var time_polling = new Date().getTime();
-        var sign_polling = app.common.createSign({
-          mac: that.data.mac,
-          userName: userId,
-          timestamp: time_polling,
-        })
-        var param_polling = {
-          sign: sign_polling,
-          timestamp: time_polling,
-          mac: that.data.mac,
-          userName: userId,
-        }
-        if (res.res.isPollingEnable) {
-          polling = setInterval(() => {
-            app.req.requestPostApi('/miniprogram/machine/queryHotState', param_polling, this, res => {
-              my.alert({
-                content: JSON.stringify(res),
-              });
-              console.log(res);
-              console.warn(JSON.stringify(res));
-              if (res.res === 1) {
+      // 判断设备类型
+      if (modeType == 1) {
+        if (res.res.openType === 1) {
+          var time = res.res.missionTime;
+          that.setData({
+            showMode: false,
+            showClose: true
+          });
+          that.getAraw(time);
+          //轮询查询开水器状态
+          var time_polling = new Date().getTime();
+          var sign_polling = app.common.createSign({
+            mac: that.data.mac,
+            userName: userId,
+            timestamp: time_polling,
+          })
+          var param_polling = {
+            sign: sign_polling,
+            timestamp: time_polling,
+            mac: that.data.mac,
+            userName: userId,
+          }
+          if (res.res.isPollingEnable) {
+            polling = setInterval(() => {
+              app.req.requestPostApi('/miniprogram/machine/queryHotState', param_polling, this, res => {
+                if (res.res === 1) {
+                  clearInterval(polling);
+                  clearInterval(interval);
+                  that.setData({
+                    showClose: false
+                  });
+                }
+              }, function(res) {
                 clearInterval(polling);
-                clearInterval(interval);
-                that.setData({
-                  showClose: false
-                });
-              }
-            }, function(res) {
-              clearInterval(polling);
-            })
-          }, 2000)
+              })
+            }, 2000)
+          }
         }
-      }
-      else if (res.res.openType === 2) {
-        my.alert({
-          title: '温馨提示',
-          content: '请按键',
-          success: (res) => {
-            that.setData({
-              showMode: false,
-              showClose: true
-            });
-          },
+        else if (res.res.openType == 2) {
+          my.alert({
+            title: '温馨提示',
+            content: '请按键',
+            success: (res) => {
+              that.setData({
+                showMode: false,
+                showClose: true
+              });
+            },
+          });
+        }
+        else {
+          that.setData({
+            showMode: false,
+            showClose: false,
+          });
+          my.alert({
+            title: '提示',
+            content: res.message,
+          })
+        }
+      } else {
+        my.showToast({
+          type: 'success',
+          content: '开启设备成功',
+          duration: 1000,
         });
-      }
-      else {
-        that.setData({
-          showMode: false,
-          showClose: false,
-        });
-        my.alert({
-          title: '',
-          content: res.message,
-        })
       }
     })
   },
-  /* 开水器支付(不签约免密协议的时候调用 - 需要拉起收银台后开启机器) */
+  /* 需要拉起收银台后开启机器) */
   notSigned(tradeNO) {
     my.tradePay({
       tradeNO: tradeNO,
@@ -362,70 +287,79 @@ Page({
             success: res => {
               let url = '/alipay/miniprogram/facepay_open_machine';
               let userId = this.data.userId;
+              let modeType = this.data.modeType;
               var params = {
                 tradeNo: tradeNO,
                 alipayPid: userId,
               }
               app.req.requestPostApi(url, params, this, res => {
                 var that = this;
-                if (res.res.openType === 1) {
-                  var time = res.res.missionTime;
-                  that.setData({
-                    showMode: false,
-                    showClose: true
-                  });
-                  that.getAraw(time);
-                  //轮询查询开水器状态
-                  var time_polling = new Date().getTime();
-                  var sign_polling = app.common.createSign({
-                    mac: that.data.mac,
-                    userName: userId,
-                    timestamp: time_polling,
-                  })
-                  var param_polling = {
-                    sign: sign_polling,
-                    timestamp: time_polling,
-                    mac: that.data.mac,
-                    userName: userId,
-                  }
-                  if (res.res.isPollingEnable) {
-                    polling = setInterval(() => {
-                      app.req.requestPostApi('/miniprogram/machine/queryHotState', param_polling, this, res => {
-                        if (res.res === 1) {
+                // 判断设备类型
+                if (modeType == 1) {
+                  if (res.res.openType === 1) {
+                    var time = res.res.missionTime;
+                    that.setData({
+                      showMode: false,
+                      showClose: true
+                    });
+                    that.getAraw(time);
+                    //轮询查询开水器状态
+                    var time_polling = new Date().getTime();
+                    var sign_polling = app.common.createSign({
+                      mac: that.data.mac,
+                      userName: userId,
+                      timestamp: time_polling,
+                    })
+                    var param_polling = {
+                      sign: sign_polling,
+                      timestamp: time_polling,
+                      mac: that.data.mac,
+                      userName: userId,
+                    }
+                    if (res.res.isPollingEnable) {
+                      polling = setInterval(() => {
+                        app.req.requestPostApi('/miniprogram/machine/queryHotState', param_polling, this, res => {
+                          if (res.res === 1) {
+                            clearInterval(polling);
+                            clearInterval(interval);
+                            that.setData({
+                              showClose: false
+                            });
+                          }
+                        }, function(res) {
                           clearInterval(polling);
-                          clearInterval(interval);
-                          that.setData({
-                            showClose: false
-                          });
-                        }
-                      }, function(res) {
-                        clearInterval(polling);
-                      })
-                    }, 2000)
-
+                        })
+                      }, 2000)
+                    }
                   }
-                }
-                else if (res.res.openType === 2) {
-                  my.alert({
-                    title: '温馨提示',
-                    content: '请按键',
-                    success: (res) => {
-                      that.setData({
-                        showMode: false,
-                        showClose: true
-                      });
-                    },
+                  else if (res.res.openType === 2) {
+                    my.alert({
+                      title: '温馨提示',
+                      content: '请按键',
+                      success: (res) => {
+                        that.setData({
+                          showMode: false,
+                          showClose: true
+                        });
+                      },
+                    });
+                  }
+                  else {
+                    that.setData({
+                      showMode: false,
+                      showClose: false,
+                    });
+                    my.alert({
+                      title: '提示',
+                      content: res.message,
+                    })
+                  }
+                } else {
+                  my.showToast({
+                    type: 'success',
+                    content: '开启设备成功',
+                    duration: 1000,
                   });
-                }
-                else {
-                  that.setData({
-                    showMode: false,
-                    showClose: false,
-                  });
-                  my.alert({
-                    title: '',
-                    content: res.message,
-                  })
                 }
               })
             }
@@ -445,187 +379,6 @@ Page({
         }
       }
     })
-  },
-  // 开水器预支付
-  openHot() {
-    let userId = this.data.userId;
-    let payModel = this.data.payModel;
-    let mapping = this.data.mac;
-    let modeId = this.data.waterType;
-    let url = '/alipay/miniprogram/facepay';
-    let params = {
-      alipayPid: userId, mapping: mapping, modeId: modeId, pay_type: payModel
-    };
-    app.req.requestPostApi(url, params, this, res => {
-      let tradeNO = res.res.tradeNo;
-      // payModel 1 = 余额支付
-      if (payModel && payModel == 1) {
-        this.signed(tradeNO)
-        // payModel 2 = 当面付
-      } else if (payModel && payModel === 2) {
-        this.notSigned(tradeNO);
-        // payModel 3 = 免密支付
-      } else if (payModel && payModel == 3) {
-        this.signed(tradeNO)
-      } else {
-        my.alert({
-          title: '提示',
-          content: '请选择支付方式'
-        });
-      }
-    })
-  },
-  // 洗衣机
-  getWasher() {
-    let that = this;
-    let userId = this.data.userId;
-    let payModel = this.data.payModel;
-    let mapping = this.data.mac;
-    let modeId = this.data.WasherType;
-    let url = '/alipay/miniprogram/facepay';
-    let params = { alipayPid: userId, mapping: mapping, modeId: modeId, pay_type: payModel };
-    app.req.requestPostApi(url, params, this, res => {
-      let tradeNO = res.res.tradeNo;
-      // payModel 1 = 余额支付
-      if (payModel && payModel == 1) {
-        this.signed(tradeNO)
-        // payModel 2 = 当面付
-      } else if (payModel && payModel === 2) {
-        this.notSigned(tradeNO);
-        // payModel 3 = 免密支付
-      } else if (payModel && payModel == 3) {
-        this.signed(tradeNO)
-      } else {
-        my.alert({
-          title: '提示',
-          content: '请选择支付方式'
-        });
-      }
-    })
-  },
-  // 吹风机
-  getBlower() {
-    let that = this;
-    let userId = this.data.userId;
-    let payModel = this.data.payModel;
-    let mapping = this.data.mac;
-    let modeId = this.data.blowerType;
-    let url = '/alipay/miniprogram/facepay';
-    let params = { alipayPid: userId, mapping: mapping, modeId: modeId, pay_type: payModel };
-    app.req.requestPostApi(url, params, this, res => {
-      let tradeNO = res.res.tradeNo;
-      // payModel 1 = 余额支付
-      if (payModel && payModel == 1) {
-        this.signed(tradeNO)
-        // payModel 2 = 当面付
-      } else if (payModel && payModel === 2) {
-        this.notSigned(tradeNO);
-        // payModel 3 = 免密支付
-      } else if (payModel && payModel == 3) {
-        this.signed(tradeNO)
-      } else {
-        my.alert({
-          title: '提示',
-          content: '请选择支付方式'
-        });
-      }
-    })
-  },
-  // 烘干机
-  getDryer() {
-    let that = this;
-    let userId = this.data.userId;
-    let payModel = this.data.payModel;
-    let mapping = this.data.mac;
-    let modeId = this.data.dryerType;
-    let url = '/alipay/miniprogram/facepay';
-    let params = { alipayPid: userId, mapping: mapping, modeId: modeId, pay_type: payModel };
-    app.req.requestPostApi(url, params, this, res => {
-      let tradeNO = res.res.tradeNo;
-      // payModel 1 = 余额支付
-      if (payModel && payModel == 1) {
-        this.signed(tradeNO)
-        // payModel 2 = 当面付
-      } else if (payModel && payModel === 2) {
-        this.notSigned(tradeNO);
-        // payModel 3 = 免密支付
-      } else if (payModel && payModel == 3) {
-        this.signed(tradeNO)
-      } else {
-        my.alert({
-          title: '提示',
-          content: '请选择支付方式'
-        });
-      }
-    })
-  },
-  // 预支付不拉起收银台开启设备
-  generalPay(tradeNO) {
-    let url = '/alipay/miniprogram/facepay_open_machine';
-    let userId = this.data.userId;
-    let params = { tradeNo: tradeNO, alipayPid: userId };
-    app.req.requestPostApi(url, params, this, res => {
-      my.showToast({
-        content: '机器开启成功',
-        type: 'success',
-        duration: 1000,
-      });
-    })
-  },
-  // 预支付拉起收银台开启设备
-  generalNopay(tradeNO) {
-    my.tradePay({
-      tradeNO: tradeNO,
-      success: (res) => {
-        if (res.resultCode == 9000) {
-          my.showToast({
-            type: 'success',
-            content: '支付成功',
-            duration: 1000,
-            success: (res) => {
-              let url = '/alipay/miniprogram/facepay_open_machine';
-              let userId = this.data.userId;
-              let params = {
-                tradeNo: tradeNO,
-                alipayPid: userId,
-              }
-              app.req.requestPostApi(url, params, this, res => {
-                that.setData({
-                  showMode: false
-                })
-                my.showToast({
-                  title: '机器开启成功',
-                })
-              })
-            },
-          });
-        } else if (res.resultCode == 4000) {
-          my.showToast({
-            type: 'fail',
-            content: '支付失败',
-            duration: 1000,
-          });
-        } else if (res.resultCode == 6001) {
-          my.showToast({
-            type: 'fail',
-            content: '已取消支付',
-            duration: 1000,
-          });
-        }
-      },
-    });
-  },
-  // 开启洗衣机 调用预支付函数
-  openWasher() {
-    this.getWasher();
-  },
-  // 开启吹风机 调用预支付函数
-  openBlower() {
-    this.getBlower();
-  },
-  // 开启烘干机 调用预支付函数
-  openDryer() {
-    this.getDryer();
   },
   // 关闭开水器
   endHot() {
@@ -680,7 +433,7 @@ Page({
           confirmButtonText: '确定',
           success: (res) => {
             if (res.confirm) {
-              that.openHot();
+              that.signed();
             }
           },
         });
@@ -700,6 +453,45 @@ Page({
     cxt_arc.arc(x, y, radius, s, e, false);
     cxt_arc.stroke();//对当前路径进行描边
     cxt_arc.draw();
+  },
+  // 二维码绘制 
+  drawQRCode() {
+    var that = this;
+    let userId = this.data.userId;
+    var time = new Date().getTime();
+    var sign = app.common.createSign({
+      userName: userId,
+      timestamp: time
+    });
+    var params = {
+      userName: userId,
+      timestamp: time,
+      sign: sign
+    };
+    app.req.requestPostApi('/miniprogram/stu/qrcode', params, this, function(res) {
+      var size = that.setCanvasSize();
+      var initUrl = res.message;
+      that.createQrCode(initUrl, "qrcode", size.w, size.h);
+    })
+  },
+  // 适配不同屏幕大小的canvas
+  setCanvasSize() {
+    var size = {};
+    try {
+      var res = my.getSystemInfoSync();
+      var width = res.windowWidth;
+      var height = width;//canvas画布为正方形
+      size.w = width;
+      size.h = height;
+    } catch (e) {
+      // Do something when catch error
+      console.log("获取设备信息失败" + e);
+    }
+    return size;
+  },
+  // 调用插件中的draw方法，绘制二维码图片
+  createQrCode(url, canvasId, cavW, cavH) {
+    QR.qrApi.draw(url, canvasId, cavW, cavH);
   },
   // 获取设备信息
   getInfo() {
@@ -754,43 +546,10 @@ Page({
         break;
     }
   },
-  // 二维码绘制 
-  drawQRCode() {
-    var that = this;
-    let userId = this.data.userId;
-    var time = new Date().getTime();
-    var sign = app.common.createSign({
-      userName: userId,
-      timestamp: time
+  // 跳转到红包页面
+  goRedEnv() {
+    my.navigateTo({
+      url: '/page/redEnvelope/redEnvelope'
     });
-    var params = {
-      userName: userId,
-      timestamp: time,
-      sign: sign
-    };
-    app.req.requestPostApi('/miniprogram/stu/qrcode', params, this, function(res) {
-      var size = that.setCanvasSize();
-      var initUrl = res.message;
-      that.createQrCode(initUrl, "qrcode", size.w, size.h);
-    })
-  },
-  // 适配不同屏幕大小的canvas
-  setCanvasSize() {
-    var size = {};
-    try {
-      var res = my.getSystemInfoSync();
-      var width = res.windowWidth;
-      var height = width;//canvas画布为正方形
-      size.w = width;
-      size.h = height;
-    } catch (e) {
-      // Do something when catch error
-      console.log("获取设备信息失败" + e);
-    }
-    return size;
-  },
-  // 调用插件中的draw方法，绘制二维码图片
-  createQrCode(url, canvasId, cavW, cavH) {
-    QR.qrApi.draw(url, canvasId, cavW, cavH);
   },
 });
