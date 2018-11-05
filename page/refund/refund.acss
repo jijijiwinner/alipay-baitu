@@ -1,4 +1,4 @@
-@import '/assets/common.acss';
+@import '/assets/public.acss';
 
 .refund>view{
   background-color: #c4e8f8;

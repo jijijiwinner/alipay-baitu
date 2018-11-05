@@ -1,5 +1,3 @@
-@import "/assets/main.acss";
-
 page {
   background-color: #69c0f5;
 }

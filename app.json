@@ -1,35 +1,36 @@
 {
   "pages": [
     "page/index/index",
-    "page/machineModel/machineModel",        
     "page/mine/mine",
+    "page/draw/draw",
     "page/person/person",
-    "page/wallet/wallet",
-    "page/comment_list/comment_list",
-    "page/comment/comment",
-    "page/swingCard/swingCard",
-    "page/cardReader/cardReader",
     "page/bindNum/bindNum",
-    "page/record/record",
-    "page/groundRecharge/groundRecharge",
-    "page/refund/refund",
-    "page/recharge/recharge",
     "page/school/school",
     "page/schoolNew/schoolNew",
-    "page/operation/operation",
-    "page/waterThat/waterThat",
-    "page/cardThat/cardThat",
+    "page/machineModel/machineModel",
+    "page/redEnvelope/redEnvelope",
+    "page/wallet/wallet",
+    "page/recharge/recharge",
+    "page/groundRecharge/groundRecharge",
+    "page/refund/refund",
+    "page/swingCard/swingCard",
+    "page/cardReader/cardReader",
+    "page/helpCenter/helpCenter",
+    "page/comment_list/comment_list",
+    "page/comment/comment",
+    "page/about/about",
     "page/webview/webview",
-    "page/baituH5/baituH5",
-    "page/redEnvelope/redEnvelope"
+    "page/recordRecharge/recordRecharge",
+    "page/recordSpend/recordSpend",
+    "page/agmentRecharge/agmentRecharge",
+    "page/agmentUser/agmentUser"
   ],
   "window": {
     "enableWK": "YES",
     "enableDSL": true,
     "defaultTitle": "佰途",
-    "pullRefresh": false,
     "allowsBounceVertical": true,
-    "titleBarColor": "#63B8FF"
+    "titleBarColor": "#4AA7F4"
   },
   "tabBar": {
     "textColor": "#2c2c2c",
@@ -37,14 +38,14 @@
     "items": [
       {
         "pagePath": "page/index/index",
-        "icon": "image/boiling_nav_unsel.png",
-        "activeIcon": "image/boiling_nav_selected.png",
+        "icon": "image/table_main_1.png",
+        "activeIcon": "image/table_main_2.png",
         "name": "首页"
       },
       {
         "pagePath": "page/mine/mine",
-        "icon": "image/mine_nav_unsel.png",
-        "activeIcon": "image/mine_nav_selected.png",
+        "icon": "image/table_me_1.png",
+        "activeIcon": "image/table_me_2.png",
         "name": "个人中心"
       }
     ]

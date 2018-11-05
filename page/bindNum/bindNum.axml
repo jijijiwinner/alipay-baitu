@@ -1,18 +1,21 @@
 <view class='container'>
-  <form onSubmit='baitu_getBack'>
-    <!-- 忘记密码手机号码  -->
-    <view class='baitu_enrol'>
-      <input onInput='getTel' name="telephone" type='number' maxlength='13' placeholder='手机号' placeholder-class='register_input'></input>
+  <view class="title font_15 font_color3">为了您的账号安全，请绑定手机号</view>
+  <form onSubmit='bindPhone'>
+    <!-- 手机号 -->
+    <view class="bindNum">
+      <image class="image" src="../../image/phone_icon_number.png" mode="aspectFit" />
+      <input onInput='getTel' name='telephone' class="font_15 font_color6" type="number" placeholder="请输入您的手机号" auto-focus />
     </view>
-    <!-- 忘记验证码  -->
-    <view class='baitu_enrol'>
-      <input type="text" value="{{code}}" placeholder="验证码" placeholder-class="register_input" name='code'/>
-      <button hover-class="none" class='btnrth' onTap='getCode' disabled='{{buttonDsiable}}'>{{codes}}</button>
+    <!-- 验证码 -->
+    <view class="bindNum">
+      <image class="image-code" src="../../image/phone_icon_code.png" mode="aspectFit" />
+      <input name='code' class="font_15 font_color6" type="number" placeholder="请输入验证码" />
+      <button type="default" class="btnrth font_13 font_color4" catchTap="getCode" disabled="{{disabled}}">{{codes}}</button>
     </view>
-    <!-- 完成按钮  -->
-    <button class='goback_btn' form-type="submit" hover-class="none">
-      <image src="../../image/btn_login.png" mode="scaleToFill" />
-    </button>
+    <!-- 提交按钮 -->
+    <view class="bindTel">
+      <button form-type="submit" class="bg_color1 font_color1 font_15">确认绑定</button>
+    </view>
   </form>
 </view>
 <view class="reward" a:if="{{showAct}}">

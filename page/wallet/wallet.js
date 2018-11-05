@@ -6,6 +6,16 @@ Page({
     showRefund: false,
     showPay: false,
   },
+  onLoad() {
+    let that = this;
+    let userId = my.getStorageSync({
+      key: 'userId', // 缓存数据的key
+    }).data;
+    that.setData({ userId: userId })
+    that.getRefund();
+    that.getMoney();
+  },
+  // 获取金额
   getMoney() {
     let that = this;
     let userId = that.data.userId;
@@ -26,10 +36,8 @@ Page({
       })
     });
   },
-  /**
-   * 获取退款权限
-   */
-  getRefund: function() {
+  // 获取退款权限
+  getRefund() {
     let that = this;
     let userId = that.data.userId;
     let time = new Date().getTime();
@@ -55,40 +63,24 @@ Page({
       }
     })
   },
-  /**
-   * 跳转至充值页面
-   */
-  goto: function() {
+  // 充值
+  goRecharge() {
     my.navigateTo({
       url: '../recharge/recharge'
     })
   },
-  /**
-  * 跳转到退款页面
-  */
-  refund: function() {
+  // 退款
+  goRefund() {
     my.navigateTo({
       url: '../refund/refund',
     })
   },
-  /**
-   * 记录页面
-   */
-  record: function() {
-    my.navigateTo({
-      url: '../record/record',
-    })
+  // 充值记录
+  goTopup() {
+    my.navigateTo({ url: '/page/recordRecharge/recordRecharge' });
   },
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad() {
-    let that = this;
-    let userId = my.getStorageSync({
-      key: 'userId', // 缓存数据的key
-    }).data;
-    that.setData({ userId: userId })
-    that.getRefund();
-    that.getMoney();
+  // 消费记录
+  goSpend() {
+    my.navigateTo({ url: '/page/recordSpend/recordSpend' });
   },
 });

@@ -40,7 +40,7 @@ Page({
         system = res.system;
       },
     });
-    let stuId = my.getStorageSync({ key: 'id', }).data;
+    let stuId = my.getStorageSync({ key: 'stuId', }).data;
     let device = app.md5.hexMD5(model + system);
     let sign = app.common.createSign({
       student_id: stuId,

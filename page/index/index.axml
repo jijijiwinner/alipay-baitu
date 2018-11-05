@@ -1,6 +1,7 @@
 <view class='main'>
   <!-- 广告位 -->
-  <view class='header'>
+  <view class='header'></view>
+  <view class="advert">
     <swiper indicator-dots="true" autoplay="true" interval="3000" duration="1000">
       <block a:for="{{info}}" a:for-index="index" a:key='index'>
         <swiper-item>
@@ -9,81 +10,23 @@
       </block>
     </swiper>
   </view>
-  <!-- 扫一扫二维码联动 -->
-  <view class='footer'>
-    <view class='bar'>
-      <view onTap='show' id="scan" class="{{show?'select':'normal'}}">扫一扫</view>
-      <view onTap='show' id="code" class="{{!show?'select':'normal'}}">二维码</view>
-    </view>
-    <view class='slip'>
-      <view a:if="{{showType}}" style='width:{{screenWidth/pixelRatio}}rpx;height:{{screenWidth/pixelRatio}}rpx;'>
-        <view class='child' style="width:{{screenWidth/pixelRatio *2/3}}rpx;height:{{screenWidth/pixelRatio * 2/3}}rpx;        border-radius:{{screenWidth/pixelRatio * 2/3}}rpx;        background-size:300rpx;        background-position:{{(screenWidth/pixelRatio *2/3 - 300)/2 }}rpx" catchTap='scan' a:if="{{!showClose}}"></view>
-        <canvas canvas-id="scan" id="scan" a:if="{{showClose}}"></canvas>
-        <view class='close' style="width:{{screenWidth/pixelRatio *2/3}}rpx;height:{{screenWidth/pixelRatio*2/3}}rpx;        line-height:{{screenWidth/pixelRatio*2/3}}rpx;        border-radius:{{screenWidth/pixelRatio*2/3}}rpx;" onTap="endHot" a:if="{{showClose}}">点击停水</view>
-      </view>
-      <view a:if="{{!showType}}" style='width:{{screenWidth/pixelRatio}}rpx;height:{{screenWidth/pixelRatio}}rpx;'>
-        <canvas canvas-id='qrcode' id="qrcode"></canvas>
-      </view>
+  <!-- 扫一扫二维码 -->
+  <view class="sweep-area" a:if="{{showType}}">
+    <view class="scan" onTap="scanCode" a:if="{{!state}}"></view>
+    <view class="scan" onTap="stopHot" a:else>
+      <text>出水中</text>
     </view>
   </view>
-  <!-- 选择模式下模态框 -->
-  <!-- 所有机器 -->
-  <view class='water' a:if="{{showMode}}">
-    <view class="shadow" style="height:{{screenHeight}}px"></view>
-    <view class='detail'a:if="{{is_baitu_worker}}">
-      <text>请选择{{modeName}}模式({{mac}})</text>
-      <block a:for="{{hotMode}}" a:for-index="index" a:key='index'>
-        <view id="{{item.modeId}}" catchTap='getModeType'>{{item.name}}</view>
-      </block>
-      <view catchTap='cancel' id="cancelWater">取消</view>
-      <view class="payment" catchTap ='choosePay'>
-        <view>
-          <view>支付方式</view>
-          <view class="payWay">{{paySelect}}</view>
-          <image style='width:40rpx;height:40rpx;' src="../../image/jiantou.png" mode="widthFix" />
-        </view>
-        <block a:for="{{payList}}" a:key='item.type'>
-          <view class="payHeader" a:if="{{payMenu}}">
-            <view>
-              <image style= 'width:60rpx;height:60rpx;' src="{{item.icon_url}}" mode="widthFix" />
-            </view>
-            <view catchTap='selectPay' data-text='{{item.description}}' id='{{item.type}}'>            {{item.description}}          </view>
-          </view>
-        </block>
-      </view>
+  <view class="sweep-area" a:else>
+    <text class="font_13 font_color7">将二维码对准设备扫码口</text>
+    <image src="{{codeData}}" mode="widthFix" />
+  </view>
+  <!-- 功能按钮 -->
+  <view class="sweep-btn">
+    <view>
+      <view onTap="scaning">扫一扫</view>
+      <view onTap="ewm">二维码</view>
     </view>
-    <!-- 非内部员工 -->
-    <view class='detail' a:else>
-      <text>请选择{{modeName}}模式</text>
-      <block a:for="{{hotMode}}" a:for-index="index" a:key='index'>
-        <view class="model" id="{{item.modeId}}" catchTap='getModeType'>{{item.name}}</view>
-      </block>
-      <view class="model" catchTap='cancel' id="cancelWater">取消</view>
-      <view class="payment" catchTap ='choosePay'>
-        <view>
-          <view>支付方式</view>
-          <view class="payWay">{{paySelect}}</view>
-          <image style='width:40rpx;height:40rpx;' src="../../image/jiantou.png" mode="widthFix" />
-        </view>
-        <!-- 循环支付方式 -->
-        <block a:for="{{payList}}" a:key='item.type'>
-          <view class="payHeader" a:if="{{payMenu}}">
-            <view>
-              <image src="{{item.icon_url}}" mode="widthFix" />
-            </view>
-            <!-- 选择支付方式 -->
-            <view catchTap='selectPay' 
-              data-text='{{item.description}}' 
-              id='{{item.type}}'>
-              {{item.description}}
-            </view>
-          </view>
-        </block>
-      </view>
-    </view>
-    <!-- 红包按钮 -->
-    <view class="redEnve" catchTap='goRedEnv'>
-      <image src="../../image/hongbao.png" mode="widthFix" />
-    </view>
+    <view style="{{switch}}">{{switchName}}</view>
   </view>
 </view>

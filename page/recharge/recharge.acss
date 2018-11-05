@@ -1,41 +1,77 @@
-@import '/assets/main.acss';
-.money,.money-cz{
+@import '/assets/public.acss';
+
+page {
+  background: #fff;
+}
+.money{
   width: 100%;
+  padding-top: 50rpx;
   text-align: center;
+}
+.money >view {
+  margin: 20rpx 10rpx;
 }
 .number{
   display: inline-block;  
-  width: 30%;
+  width: 25%;
   height: 100rpx;
   line-height: 100rpx; 
   border: 1rpx solid #eeeeee;
   border-radius: 10rpx;
   color: #c5E8F9;
 }
-input,button{
-  width: 80%;
-  margin-left:10%;
-  border:solid 1rpx #eeeeee;
-}
 .normal{
-  color:#2b7d9e;
-  background-color: rgb(203, 233, 244);
-  border-radius: 50rpx;
+  color:#4AA7F4;
+  border-radius: 6rpx;
+  border:1rpx solid #4AA7F4;
 }
 .selected{
-  color: #c5E8F9;
-  border-radius: 50rpx;
-  background-color: rgb(62, 179, 236);
-}
-view{
-  margin-top: 10rpx;
+  color: #fff;
+  border-radius: 6rpx;
+  background-color: #4AA7F4;;
 }
 .text{
   text-align: center;
 }
-button{
-  background-color: #c5E8F9;
-  color: #2B7D9E;
-  margin: 60rpx;
-  border-radius: 50rpx;
+.money-input {
+  display: flex;
+  justify-content: center;
+}
+#number {
+  width: 75%;
+  border-bottom: 1rpx solid #e6e7e8;
+}
+.recharge-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 16rpx;
+}
+.recharge-btn > button {
+  width: 75%;
+  border-radius: 44rpx;
+}
+.recharge-list {
+  margin: 20rpx 80rpx;
+}
+.list-top {
+  margin: 20rpx 0;
+}
+.list-bottom {
+  display: flex;
+  align-items: center;
+  margin: 40rpx 0;
+}
+.list-bottom > image {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 20rpx;  
+}
+.list-bottom > view:last-child {
+  width: 350rpx;
+  text-align: right;
+}
+.list-bottom > view:last-child > image {
+  width: 40rpx;
+  height: 40rpx;
 }

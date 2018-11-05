@@ -1,11 +1,13 @@
 const app = getApp();
-
 Page({
   data: {
     userId: '',
     mac: '',
     cardNo: '',
     task_uuid: '',
+    scanBox: false,  // 弹出扫码弹框
+    readCard: false, // 倒计时读卡弹框
+    countDown: '15',  // 倒计时
   },
   onShow() {
     let that = this;
@@ -27,51 +29,123 @@ Page({
     });
   },
 
-  // 刷卡绑定
+  // 绑卡 - 显示弹窗
   bind() {
+    let card = my.getStorageSync({
+      key: 'cardNo', // 缓存数据的key
+    }).data;
+    if (!card) {
+      this.setData({
+        scanBox: true
+      })
+    } else {
+      my.showToast({
+        content: '已绑卡',
+        type: 'fail',
+        duration: 1000,
+      });
+    }
+  },
+  // 点击开始扫码
+  startScan() {
     let that = this;
     let cardNo = that.data.cardNo;
     let mac = that.data.mac;
     let userId = that.data.userId;
-    if (!cardNo) {
-      my.scan({
-        success: (res) => {
-          console.log(res)
-          mac = res.code;
-          that.setData({ mac: mac, })
-          var url = '/miniprogram/sign/bind';
-          var time = new Date().getTime();
-          var sign = app.common.createSign({
-            mac: mac,
-            userName: userId,
-            timestamp: time,
-          });
-          var params = {
-            mac: mac,
-            sign: sign,
-            userName: userId,
-            timestamp: time,
-          }
-          var task_uuid = that.data.task_uuid;
-          // 调用网络接口
-          app.req.requestPostApi(url, params, this, function(res) {
-            var task_uuid = res.message;
-            my.redirectTo({
-              url: "/page/cardReader/cardReader?mac=" + mac + "&userName=" + userId + "&task_uuid=" + task_uuid
-            })
-          })
+    my.scan({
+      success: (res) => {
+        mac = res.code;
+        that.setData({ mac: mac, })
+        let url = '/miniprogram/sign/bind';
+        let time = new Date().getTime();
+        let sign = app.common.createSign({
+          mac: mac,
+          userName: userId,
+          timestamp: time,
+        });
+        let params = {
+          mac: mac,
+          sign: sign,
+          userName: userId,
+          timestamp: time,
         }
-      });
-    } else {
-      my.showToast({
-        content: '卡号绑过啦',
-        type: 'fail',
-        duration: 1000
-      })
-      return false
-    }
+        let task_uuid = that.data.task_uuid;
+        this.setData({ scanBox: false, })
+        app.req.requestPostApi(url, params, this, res => {
+          let task_uuid = res.message;
+          this.setData({ task_uuid: task_uuid, readCard: true })
+          this.cardRead();
+        })
+      }
+    });
   },
-
+  // 读卡操作
+  cardRead() {
+    let times = 0;
+    let userId = this.data.userId;
+    let task_uuid = this.data.task_uuid;
+    let timestamp = new Date().getTime();
+    let url = '/miniprogram/sign/checkBind';
+    let sign = app.common.createSign({
+      userName: userId,
+      timestamp: timestamp,
+      task_uuid: task_uuid,
+    })
+    let params = {
+      sign: sign,
+      userName: userId,
+      timestamp: timestamp,
+      task_uuid: task_uuid,
+    }
+    let down = setInterval(() => {
+      let countDown = this.data.countDown;
+      countDown--;
+      this.setData({
+        countDown: countDown
+      })
+      if (countDown < 1) {
+        clearInterval(down);
+        this.setData({
+          countDown: '15'
+        })
+      }
+    }, 1000)
+    let timer = setInterval(() => {
+      if (times <= 15) {
+        times++;
+        app.req.requestPostApi(url, params, this, res => {
+          if (res.return) {
+            if (res.message == '绑定失败') {
+              clearInterval(timer);
+              my.alert({
+                title: '提示',
+                content: '绑卡失败,该卡可能已经被绑定',
+                success: res => {
+                  this.setData({ readCard: false })
+                },
+              });
+              return;
+            }
+            my.setStorageSync({
+              key: 'cardNo',
+              data: res.res.sa_card_no,
+            });
+            clearInterval(timer);
+            this.setData({ readCard: false })
+          }
+        })
+      } else {
+        clearInterval(timer);
+        my.alert({
+          title: '提示',
+          content: '绑卡失败',
+          success: (res) => {
+            this.setData({ readCard: false })
+          },
+        });
+      }
+    }, 1000)
+  },
   // 解绑
   remove() {
     let that = this;
@@ -98,12 +172,11 @@ Page({
             my.showToast({
               content: '解绑成功',
               type: 'success',
-              duration: 500,
+              duration: 1000,
               success: (res) => {
                 app.req.requestPostApi(url, params, this, res => {
-                  my.setStorage({
-                    key: 'cardNo', // 缓存数据的key
-                    data: '',
+                  my.removeStorage({
+                    key: 'cardNo',
                   });
                   that.setData({ cardNo: '' })
                 })

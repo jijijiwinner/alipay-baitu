@@ -1,0 +1,23 @@
+<view class="container">
+  <!-- 消费记录列表 -->
+  <view class="main" a:if="{{co_array.length != 0 }}">
+    <block a:for="{{co_array}}" a:key='index'>
+      <view class="main-all">
+        <view class="main-top">
+          <view class="font_color3 font_15">{{item.name}}</view>
+          <view class="font_color6 font_13">{{item.time_str}}</view>
+        </view>
+        <view class="main-bottom font_15 font_color4">-{{item.price}}
+          <view class="{{item.state == 1 ? 'complete' : 'warning'}}">({{item.state_str}})</view>
+        </view>
+      </view>
+    </block>
+  </view>
+  <!-- 暂无数据 -->
+  <view class="no-list" a:else>
+    <view class="noRecord">
+      <image src="../../image/icon_zanwu.png" mode="widthFix" />
+    </view>
+    <view class="noRecord font_color4">暂无消费记录</view>
+  </view>
+</view>

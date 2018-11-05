@@ -1,0 +1,22 @@
+<view class='header'>
+  <view>
+    <image src="../../image/tag_water.png"></image>
+    <text>正在出水中，请保持安全距离，以免烫伤</text>
+  </view>
+</view>
+<view class='draw-button'>
+  <view class='cover'>
+    <view class='animation'>
+      <view class='stop' onTap='stopHot'>
+        <text>点击停水</text>
+      </view>
+    </view>
+  </view>
+</view>
+<view class='draw-flow'>
+  <view style='{{drawFlow1}}'></view>
+  <view style='{{drawFlow2}}'></view>
+</view>
+<view class='draw-footer'>
+  <text>出水中途可点击停水</text>
+</view>

@@ -1,7 +1,7 @@
 <!-- 未申请退款 -->
 <view a:if="{{!ifOrder}}">
   <view class='refund'>
-    <text class='font_36 font_color1'>退款数据</text>
+    <text class='font_36 font_color9 '>退款数据</text>
     <view class='analysis'>
       <view>
         <view>可退金额</view>
@@ -14,7 +14,7 @@
     </view>
   </view>
   <view class='refund'>
-    <text class='font_36 font_color1'>退款账单</text>
+    <text class='font_36 font_color9 '>退款账单</text>
     <view class="detail">
       <view a:for="{{refundData.backDetails}}" a:key="index" class='orderFlex'>
         <view>
@@ -29,7 +29,7 @@
     </view>
   </view>
   <view class='refund' a:if="{{showTrans}}">
-    <text class='font_36 font_color1 '>转账账单</text>
+    <text class='font_36 font_color9  '>转账账单</text>
     <icon type='info' size='14' onTap="getWarn"></icon>
     <view class='detail'>
       <view a:for="{{refundData.transDetails}}" a:key="index" class='orderFlex'>
@@ -45,7 +45,7 @@
     </view>
   </view>
   <view class='refund account' a:if="{{showTrans}}">
-    <text class="font_36 font_color1">转账账号</text>
+    <text class="font_36 font_color9 ">转账账号</text>
     <view class="alipay">
       <text>支付宝账号</text>
       <input name='account' placeholder="请输入支付宝账号" onInput="getAccount" />
@@ -62,7 +62,7 @@
 <!-- 已申请退款 -->
 <view a:if="{{ifOrder}}">
   <view class='order'>
-    <text class='font_36 font_color1 margin_30_t'>退款详情</text>
+    <text class='font_36 font_color9  margin_30_t'>退款详情</text>
     <view class='summary'>
       <view>
         <view class='third'>可退金额:{{orderData.toRefundMoney/100}}元</view>
@@ -75,7 +75,7 @@
     </view>
   </view>
   <view class='order'>
-    <text class='font_36 font_color1 margin_30_t'>退款明细</text>
+    <text class='font_36 font_color9  margin_30_t'>退款明细</text>
     <view class='detail'>
       <view a:for="{{orderDetail}}" a:key="index" class='orderFlex'>
         <view>

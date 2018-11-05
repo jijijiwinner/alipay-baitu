@@ -1,0 +1,18 @@
+<view class="container">
+  <!-- 顶部图片 -->
+  <view class="header">
+    <image src="../../image/about_logo.png" mode="widthFix" />
+    <view class="font_color1 font_20">佰途</view>
+  </view>
+  <!-- 用户协议 -->
+  <view class="mid">
+    <list>
+      <list-item  arrow onClick='goAgreement'>用户协议</list-item>
+    </list>
+  </view>
+  <!-- 公司信息 -->
+  <view class="footer">
+    <view class="font_13 font_color3">浙江佰途科技有限公司</view>
+    <view class="font_13 font_color3">客服热线：400-168-2811</view>
+  </view>
+</view>

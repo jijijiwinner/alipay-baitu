@@ -1,25 +1,48 @@
+<!-- 绑定实体卡 -->
 <view class='container'>
-  <view class='swcard_background'>
-    <view class='swcar_img'>
-      <image src='../../image/icon_care.png'></image>
-    </view>
-    <view class='swcar_text font_32'>卡号</view>
-    <view class='swcar_text_two font_32'>{{ cardNo }}</view>
+  <!-- 显示卡号区域 -->
+  <view class="header">
+    <view class="font_color1">卡号</view>
+    <view class="font_color1">{{cardNo}}</view>
   </view>
-  <!-- 温馨提示公告  -->
-  <view class='swcar_public'>
-    <image src='../../image/icon_red.png'></image>
-    <view>温馨提示：一张水卡只能绑定一个账号</view>
+  <!-- 提示栏 -->
+  <view class="mid">温馨提示：一张卡只能绑定一个账号</view>
+  <!-- 功能按钮 -->
+  <view class="footer">
+    <button catchTap="remove" class="font_15 font_color4">解绑</button>
+    <button catchTap="bind" class="bg_color1 font_15 font_color1">绑卡</button>
   </view>
-  <!-- 刷卡绑定/解除绑定  -->
-  <view class='swing_card font_32'>
-    <view class='swing_machine' catchTap='bind'>
-      <image src='../../image/icon_left.png'></image>
-      <view>刷卡绑定</view>
+  <!-- 开始扫码组件 -->
+  <view class="scanning-box" a:if="{{scanBox}}">
+    <view class="shadow"></view>
+    <view class="detail">
+      <view class="font_15">请先扫描设备上二维码</view>
+      <view>
+        <image class="image" src="../../image/card_guide_1.png" mode="aspectFit" />
+      </view>
+      <view>
+        <button class="scan-btn bg_color2 font_15 font_color1" onTap="startScan">开始扫码</button>
+      </view>
     </view>
-    <view class='swing_machine font_32' catchTap='remove'>
-      <image class='swing_two' src='../../image/iconright.png'></image>
-      <view>解除绑定</view>
+  </view>
+  <!-- 读卡倒计时组件 -->
+  <view class="scanning-box" a:if="{{readCard}}">
+    <view class="shadow"></view>
+    <view class="detail">
+      <view class="font_15">将卡放在设备的读卡区域读卡</view>
+      <view class="text_align_c">
+        <image src="../../image/card_guide_2.png" mode="aspectFit" />
+      </view>
+      <block a:if="{{sa_card_no}}">
+        <view class="bindSucc">
+          <image src=".../../image/card_guide_done.png" mode="widthFix" />
+          <view class="font_15 font_color10">绑卡成功</view>
+        </view>
+      </block>
+      <block a:else>
+        <view class="text_align_c font_15 creditCard">请在15s内完成刷卡操作</view>
+        <view class="countDown font_color1 font_15">{{countDown}}</view>
+      </block>
     </view>
   </view>
 </view>

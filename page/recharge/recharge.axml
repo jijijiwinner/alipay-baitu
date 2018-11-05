@@ -1,14 +1,31 @@
-<view class='text'>
-  <text>选择充值金额</text>
-</view>
-<view class='money' a:if="{{!give}}" a:key="index">
-  <block a:for="{{txtArray}}" a:key="index">
-    <view id="{{item.id}}" class="{{item.getColor?'selected':'normal'}} number" onTap='changeColor'>{{item.text}}</view>
-  </block>  
-</view>
-<view>
-  <input a:if="{{show}}" class="number" onConfirm="confirmMoney"  onInput='getMoney' type='number' focus='true' placeholder='输入充值金额'></input>
-</view>
-<view>
-   <button onTap='recharge'>充值</button> 
+<view class="container">
+  <!-- 金额列表 -->
+  <view class='money' a:if="{{!give}}" a:key="index">
+    <block a:for="{{txtArray}}" a:key="index">
+      <view id="{{item.id}}" class="{{item.getColor?'selected':'normal'}} number font_15" onTap='changeColor'>{{item.text}}</view>
+    </block>
+  </view>
+  <!-- 输入金额框 -->
+  <view class="money-input">
+    <input id='number' class="font_color5 font_15" a:if="{{show}}" onConfirm="confirmMoney" onInput='getMoney' type="number" placeholder="请输入充值金额" />
+  </view>
+  <!-- 支付方式 -->
+  <view class="recharge-list">
+    <view class="list-top font_15 font_color5">支付方式</view>
+    <view class="list-bottom">
+      <image src="../../image/detail_icon_alipay.png" mode="widthFix" />
+      <view class="font_15 font_color3">支付宝支付</view>
+      <view>
+        <image src="../../image/card_guide_done.png" mode="widthFix" />
+      </view>
+    </view>
+  </view>
+  <!-- 立即充值 -->
+  <view class="recharge-btn">
+    <button class="bg_color2 font_color1 font_15" catchTap="recharge">立即充值</button>
+  </view>
+  <!-- 充值协议 -->
+  <view class="text_align_c font_12 font_color5">点击立即充值即表示同意
+    <text catchTap='goPayagrment' class="font_12 font_color4">充值协议</text>
+  </view>
 </view>

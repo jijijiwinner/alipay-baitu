@@ -1,3 +1,6 @@
 {
-  "defaultTitle": "佰途"
+  "defaultTitle": "佰途",
+   "usingComponents": {
+    "notice": "mini-antui/es/notice/index"
+  }
 }

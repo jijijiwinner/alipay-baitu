@@ -1,17 +1,51 @@
-<view class="all">
-  <view a:for="{{mine}}" a:key='index'>
-    <view class="col">
-      <navigator url="{{item.url}}">
-        <image src="{{item.src}}" />
-        <view>{{item.name}}</view>
-      </navigator >
+<!-- 个人中心 -->
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="header-left">
+      <image src="../../image/me_icon_about.png" mode="widthFix" />
+    </view>
+    <view class="header-mid">
+      <view class="font_color1 font_13" a:if="{{telephone}}">手机号：{{telephone}}</view>
+      <view class="font_color1 font_13" a:else>手机号：未绑定</view>
+      <view class="font_color1 font_13">ID：{{id}}</view>
+      <view class="font_color1 font_13">
+        <image class="image" src="../../image/icon_school.png" mode="widthFix" />        {{schoolName}}      
+      </view>
+    </view>
+    <view catchTap='goPerson' class="header-right font_color1">
+      <image class="image" src="../../image/me_icon_edit.png" mode="widthFix" />
+      <view class="font_13 font_color1">编辑</view>
     </view>
   </view>
-  <!-- 跳转到支付宝H5页面 保留暂不使用  -->
-  <!-- <view class="baitu_H5" onTap="goH5">
-    <view class="baitu_col">
-      <image class="baitu_img" src="../../image/btn_login.png" mode="aspectFit" />
-      <view class="baitu_text">佰途H5</view>
+  <!-- 中间 -->
+  <view class="mid">
+    <view class="mid-left" catchTap ='goWallet'>
+      <view class="font_12 font_color6">
+        <image src="../../image/me_icon_wallet.png" mode="widthFix" />
+        <text class="font_13 font_color6">钱包余额</text>        
+      </view>
+      <view class="font_24 font_color2">{{money}}</view>
     </view>
-  </view> -->
+    <view class="mid-right" catchTap='goRecharge'>
+      <view class="font_color8">充值</view>
+    </view>
+  </view>
+  <!-- 底部 -->
+  <view class="footer">
+    <list>
+      <list-item arrow onClick='goBindCard' >
+        <image src="../../image/me_icon_card.png" mode="widthFix" />        绑定实体卡                        
+      </list-item>
+      <list-item arrow onClick='goHelpCenter'  >
+        <image src="../../image/me_icon_help.png" mode="widthFix" />        帮助中心                        
+      </list-item>
+      <list-item arrow onClick='goFeedBack'  >
+        <image src="../../image/me_icon_chat.png" mode="widthFix" />        舆情反馈                        
+      </list-item>
+      <list-item arrow onClick='goAbout' >
+        <image src="../../image/me_icon_about.png" mode="widthFix" />        关于我们                        
+      </list-item>
+    </list>
+  </view>
 </view>

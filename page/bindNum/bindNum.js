@@ -6,7 +6,6 @@ Page({
     code: '',                 //  短信验证码
     codes: '获取验证码',       //   页面文字
     count: 60,                //   存储倒计时
-    buttonDsiable: false,     //   三元禁用按钮
     showAct: false,         //   红包显示
     getText: "领取红包",
     disabled: false,
@@ -65,16 +64,16 @@ Page({
         let timer = setInterval(() => {
           let count = that.data.count - 1;
           that.setData({
-            codes: count + 's重新发送',
+            codes: '重新发送' + count +'s',
             count: count,
-            buttonDisable: true,
+            disabled: true,
           })
           if (count < 1) {
             clearInterval(timer);
             that.setData({
               count: 59,
               codes: '获取验证码',
-              buttonDisable: false,
+              disabled: true,
             })
           }
         }, 1000)
@@ -89,7 +88,7 @@ Page({
   },
 
   // 表单提交
-  baitu_getBack(e) {
+  bindPhone(e) {
     let that = this;
     let userId = that.data.userId;
     let telephone = e.detail.value.telephone;

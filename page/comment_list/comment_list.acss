@@ -1,10 +1,12 @@
-@import "/assets/common.acss";
-
+page {
+  border-top: 1rpx solid #eff1f4;   
+}
 .list {
   width: 100%;
   font-size: 28rpx;
   display: flex;
   padding: 30rpx;
+  background: #fff;
 }
 
 .list>view:first-child {

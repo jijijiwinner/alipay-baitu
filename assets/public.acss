@@ -1,0 +1,81 @@
+/* 字体大小 */
+.font_12 {
+  font-size: 12px;
+}
+.font_15{
+  font-size: 15px;
+}
+.font_17 {
+  font-size: 17px;
+}
+.font_18{
+  font-size: 18px;
+}
+.font_20{
+  font-size: 20px;
+}
+.font_24 {
+  font-size: 24px;
+}
+.font_36 {
+  font-size: 36rpx;
+}
+
+/* 字体颜色 */
+.font_color1{
+  color: white;
+}
+.font_color2 {
+  color:#535353;
+}
+.font_color3 {
+  color: #292929;
+}
+.font_color4 {
+  color: #4aa7f4;
+}
+.font_color5 {
+  color: #6f7072;
+}
+.font_color6 {
+  color: #bebebf;
+}
+.font_color7 {
+  color: #6B6D6F;
+}
+.font_color8 {
+  color: #FF7900;
+}
+.font_color9 {
+  color:#2b7d9e; 
+}
+.font_color10 {
+  color: #50A6EF;
+}
+
+/* 背景色 */
+.bg_color1 {
+  background: #5AA3E1;
+}
+.bg_color2 {
+  background: #4AA7F4;
+}
+
+/* 居中 */
+.text_align_c{
+  text-align: center;
+}
+
+/* 间距 */
+.margin_r10{
+  margin-right: 20rpx;
+}
+.margin_20_t{
+  margin-top: 20rpx;
+}
+.margin_30_t{
+  margin-top: 30rpx;
+}
+input {
+  color: #000;
+}

@@ -1,5 +1,5 @@
-.container {
-  font-family: PingFangSC-Light, helvetica, 'Heiti SC';
+page {
+  background: #eff1f4;  
 }
 
 view, image, text, navigator {
@@ -9,7 +9,6 @@ view, image, text, navigator {
 }
 
 view, text {
-  font-family: PingFangSC-Light, helvetica, 'Heiti SC';
-  font-size: 29rpx;
+  font-family: PingFang-SC-Medium, helvetica, 'Heiti SC';
   color: #333;
 }

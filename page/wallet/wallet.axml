@@ -1,14 +1,27 @@
-<view class="page">
-  <view class='money'>
-    <text class='font_42'>余额：{{money}}元</text>
+<view class="container">
+  <!-- 金额区域 -->
+  <view class="header">
+    <view class="font_15 font_color1">钱包余额（元）</view>
+    <view class="font_18 font_color1">{{money}}</view>
   </view>
-  <view a:if="{{showPay}}">
-    <button onTap='goto'>充值</button>
+  <!-- 记录区域 -->
+  <view class="mid">
+    <view catchTap='goTopup' class="mid-left">
+      <image src="../../image/icon_detail_recharge.png" mode="widthFix" />
+      <view class="font_15 font_color3">充值记录</view>
+    </view>
+    <view catchTap='goSpend' class="mid-right">
+      <image src="../../image/icon_detail_consume.png" mode="widthFix" />
+      <view class="font_15 font_color3">消费记录</view>
+    </view>
   </view>
-   <view a:if="{{showRefund}}">
-    <button onTap='refund'>退款</button>
-  </view>
-  <view class='record'>
-    <text class="font_34" onTap='record'>明细记录</text>
+  <!-- 功能按钮区域 -->
+  <view class="footer">
+    <view a:if="{{showRefund}}">
+      <button catchTap="goRefund" class="font_15 font_color4">退款</button>
+    </view>
+    <view a:if="{{showPay}}">
+      <button catchTap="goRecharge" class="bg_color1 font_15 font_color1">充值</button>
+    </view>
   </view>
 </view>

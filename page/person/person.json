@@ -1,3 +1,7 @@
 {
-  "defaultTitle": "个人信息"
+  "defaultTitle": "个人信息",
+    "usingComponents": {
+    "list": "mini-antui/es/list/index",
+    "list-item": "mini-antui/es/list/list-item/index"
+  }
 }

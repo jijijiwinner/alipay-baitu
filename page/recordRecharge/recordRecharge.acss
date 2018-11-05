@@ -1,0 +1,25 @@
+@import '/assets/public.acss';
+
+.main {
+  background: #fff;
+}
+.main-all {
+  padding: 30rpx;
+  border-bottom: 1rpx solid #e6e7e8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.main-top > view:last-child{
+  padding:10rpx 0 0 5rpx; 
+}
+.noRecord {
+  text-align: center;
+}
+.noRecord > image {
+  width: 80rpx;
+  height: 80rpx;
+}
+.no-list {
+  padding: 80rpx;
+}

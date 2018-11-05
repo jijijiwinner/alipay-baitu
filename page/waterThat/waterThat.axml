@@ -1,4 +1,0 @@
-<!-- 打水说明 -->
-<view class="waterThat">
-  <image src="../../image/waterThat.png" mode="widthFix" />
-</view>

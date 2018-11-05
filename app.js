@@ -4,6 +4,10 @@ var req = require('./service/request.js');
 var common = require('./service/common.js');
 var md5 = require('./service/md5.js');
 App({
+  globalData: {
+    deviceState: 0,  // 0 未开始 1进行中 2已经结束
+    devicePage: 'index'
+  },
   // 初始化加载时 获取options返回值
   onLaunch(options) {
     // 如果没有返回值 则删除 缓存值 

@@ -29,7 +29,6 @@ Page({
         id: res.res.id
       })
     })
-
   },
   // 跳转到绑定号码页面
   bindTel() {

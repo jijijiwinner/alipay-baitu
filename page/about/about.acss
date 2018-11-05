@@ -1,0 +1,28 @@
+@import '/assets/public.acss';
+
+page {
+  background: #fff;
+}
+.header {
+  text-align: center;
+  background-color: #4aa7f4;
+}
+.header > view {
+  padding: 30rpx 0 76rpx 0;
+}
+.header > image {
+  width: 152rpx;
+  height: 152rpx;
+  vertical-align: middle;
+  margin-top: 82px;
+}
+.am-list-content {
+  font-size: 15px;
+  color: #292929;
+}
+.footer {
+  text-align: center;
+}
+.footer > view:first-child {
+  padding: 460rpx 0 12rpx 0;
+}

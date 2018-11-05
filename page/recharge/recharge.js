@@ -42,10 +42,14 @@ Page({
     give: false,
     actId: '',
   },
+  // 充值协议
+  goPayagrment() { 
+    my.navigateTo({ url:'/page/agmentRecharge/agmentRecharge'});
+  },
   /**
   * 更改高亮状态及data.money
   */
-  changeColor: function(e) {
+  changeColor(e) {
     var textArray = [];
     for (var i = 0; i < this.data.txtArray.length; i++) {
       if (e.target.id == this.data.txtArray[i].id) {
@@ -74,7 +78,7 @@ Page({
   /**
    * 充值送改变选择高亮
    */
-  changeColorCZ: function(e) {
+  changeColorCZ(e) {
     var czArray = [];
     for (var i = 0; i < this.data.czGive.length; i++) {
       if (e.target.id == this.data.czGive[i].id) {
@@ -103,7 +107,7 @@ Page({
   /**
    * 获取输入金额
    */
-  getMoney: function(e) {
+  getMoney(e) {
     this.setData({
       money: e.detail.value
     })
@@ -165,7 +169,7 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function(options) {
+  onLoad(options) {
     var that = this;
     my.getStorage({
       key: 'stuId',
@@ -185,7 +189,7 @@ Page({
     })
   },
   // 键盘监听完成
-  confirmMoney(){
+  confirmMoney() {
     this.recharge()
   }
 });

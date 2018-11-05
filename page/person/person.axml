@@ -1,20 +1,27 @@
 <view class='baitu_person'>
+  <!-- 用户ID -->
   <view class='item'>
-    <view class="phoneNum">用户ID</view>
-    <view>{{ id }}</view>
+    <view class="font_15 font_color3">用户ID</view>
+    <view class="font_15 font_color6">{{id}}</view>
   </view>
+  <!-- 用户学校 -->
   <view class='item' catchTap='changeSchool'>
-    <view class='school'>学校</view>
-    <view>{{schoolName}}</view>
+    <view class='font_15 font_color3'>学校</view>
+    <view class="person-school">
+      <view class="font_15 font_color6 margin_r10">{{schoolName}}</view>
+      <image class="image" src="../../image/jiantou.png" mode="aspectFit" />
+    </view>
   </view>
+  <!-- 用户手机号 -->
   <view class="item" a:if="{{telephone}}">
-    <view class="phoneNum">手机号</view>
-    <view>{{telephone}}</view>
+    <view class="font_15 font_color3">手机号</view>
+    <view class="font_15 font_color6">{{telephone}}</view>
   </view>
   <view class="item" a:else>
-    <view class="phoneNum">手机号</view>
-    <view>
-      <text catchTap="bindTel">未绑定手机号(点击绑定)</text>
+    <view class="font_15 font_color3">手机号</view>
+    <view class="person-school">
+      <text class="font_15 font_color6 margin_r10" catchTap="bindTel">未绑定</text>
+      <image class="image" src="../../image/jiantou.png" mode="aspectFit" />
     </view>
   </view>
 </view>
