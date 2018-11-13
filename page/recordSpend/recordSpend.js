@@ -5,6 +5,8 @@ Page({
     co_array: [], // 消费记录
     co_page: 1,   // 消费记录页数
     pageNum: 15,   // 消费记录显示多少条
+    scrollTop: 0,   // 滚动距离,
+    backTop: false, // 回到顶部隐藏
   },
   onLoad() {
     let userId = my.getStorageSync({
@@ -12,6 +14,7 @@ Page({
     }).data;
     this.setData({ userId: userId })
     this.getConsumption(1)
+    this.getHeight();
   },
   // 下拉刷新
   onPullDownRefresh() {
@@ -36,7 +39,7 @@ Page({
       sign: sign
     }
     app.req.requestPostApi(url, params, this, (res) => {
-      my.stopPullDownRefresh();      
+      my.stopPullDownRefresh();
       if (res.res.length == 0) {
         return;
       }
@@ -53,4 +56,34 @@ Page({
       })
     })
   },
+  // 获取高度
+  getHeight() {
+    my.getSystemInfo({
+      success: (res) => {
+        this.setData({
+          winHeight: res.windowHeight
+        })
+      },
+    });
+  },
+  // scroll
+  scroll(e) {
+    if (e.detail.scrollTop > 300) {
+      this.setData({
+        backTop: true,
+        scrollTop:e.detail.scrollTop,
+      })
+    } else {
+      this.setData({
+        backTop: false
+      })
+    }
+  },
+  // goTop
+  goTop() {
+    let scrollTop = this.data.scrollTop;
+    this.setData({
+      scrollTop: 0,
+    })
+  }
 });

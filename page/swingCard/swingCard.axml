@@ -21,7 +21,7 @@
         <image class="image" src="../../image/card_guide_1.png" mode="aspectFit" />
       </view>
       <view>
-        <button class="scan-btn bg_color2 font_15 font_color1" onTap="startScan">开始扫码</button>
+        <button class="scan-btn bg_color2 font_15 font_color1" onTap="startScan">开始扫码                        </button>
       </view>
     </view>
   </view>
@@ -33,14 +33,12 @@
       <view class="text_align_c">
         <image src="../../image/card_guide_2.png" mode="aspectFit" />
       </view>
-      <block a:if="{{sa_card_no}}">
-        <view class="bindSucc">
-          <image src=".../../image/card_guide_done.png" mode="widthFix" />
-          <view class="font_15 font_color10">绑卡成功</view>
-        </view>
-      </block>
-      <block a:else>
-        <view class="text_align_c font_15 creditCard">请在15s内完成刷卡操作</view>
+      <view class="bindSucc" a:if="{{state == 1 }}">
+        <image src="../../image/card_guide_done.png" mode="widthFix" />
+        <view class="font_15 font_color10 text_align_c">绑卡成功</view>
+      </view>
+      <block a:if="{{ state == 0}}">
+        <view class="text_align_c font_15 creditCard">请在30s内完成刷卡操作</view>
         <view class="countDown font_color1 font_15">{{countDown}}</view>
       </block>
     </view>

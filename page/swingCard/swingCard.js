@@ -7,7 +7,8 @@ Page({
     task_uuid: '',
     scanBox: false,  // 弹出扫码弹框
     readCard: false, // 倒计时读卡弹框
-    countDown: '15',  // 倒计时
+    countDown: '30',  // 倒计时
+    state: 0,    // 默认绑卡状态为0
   },
   onShow() {
     let that = this;
@@ -73,7 +74,7 @@ Page({
         this.setData({ scanBox: false, })
         app.req.requestPostApi(url, params, this, res => {
           let task_uuid = res.message;
-          this.setData({ task_uuid: task_uuid, readCard: true })
+          this.setData({ task_uuid: task_uuid, state: 0, readCard: true })
           this.cardRead();
         })
       }
@@ -81,7 +82,6 @@ Page({
   },
   // 读卡操作
   cardRead() {
-    let times = 0;
     let userId = this.data.userId;
     let task_uuid = this.data.task_uuid;
     let timestamp = new Date().getTime();
@@ -97,51 +97,40 @@ Page({
       timestamp: timestamp,
       task_uuid: task_uuid,
     }
-    let down = setInterval(() => {
-      let countDown = this.data.countDown;
-      countDown--;
-      this.setData({
+
+    let _this = this;
+    let countDown = 29;
+    let timer = setInterval(() => {
+      _this.setData({
         countDown: countDown
       })
-      if (countDown < 1) {
-        clearInterval(down);
-        this.setData({
-          countDown: '15'
-        })
-      }
-    }, 1000)
-    let timer = setInterval(() => {
-      if (times <= 15) {
-        times++;
-        app.req.requestPostApi(url, params, this, res => {
-          if (res.return) {
-            if (res.message == '绑定失败') {
-              clearInterval(timer);
-              my.alert({
-                title: '提示',
-                content: '绑卡失败,该卡可能已经被绑定',
-                success: res => {
-                  this.setData({ readCard: false })
-                },
-              });
-              return;
-            }
-            my.setStorageSync({
-              key: 'cardNo',
-              data: res.res.sa_card_no,
-            });
-            clearInterval(timer);
-            this.setData({ readCard: false })
-          }
-        })
-      } else {
+      countDown--;
+      app.req.requestPostApi(url, params, this, res => {
+        if (res.return && res.res.sa_card_no) {
+          clearInterval(timer);
+          my.setStorageSync({
+            key: 'cardNo',
+            data: res.res.sa_card_no,
+          });
+          _this.setData({
+            state: 1,
+            countDown: 30,
+            cardNo: res.res.sa_card_no
+          });
+          let polling = setTimeout(() => {
+            _this.setData({
+              readCard: false,
+            })
+            clearTimeout(polling);
+          }, 1000)
+        }
+      })
+      //倒计时结束未进行绑卡操作
+      if (countDown < 0) {
         clearInterval(timer);
-        my.alert({
-          title: '提示',
-          content: '绑卡失败',
-          success: (res) => {
-            this.setData({ readCard: false })
-          },
+        _this.setData({
+          countDown: 30,
+          readCard: false,
         });
       }
     }, 1000)

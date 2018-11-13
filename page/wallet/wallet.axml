@@ -2,7 +2,7 @@
   <!-- 金额区域 -->
   <view class="header">
     <view class="font_15 font_color1">钱包余额（元）</view>
-    <view class="font_18 font_color1">{{money}}</view>
+    <view class="font_24 font_color1">{{money}}</view>
   </view>
   <!-- 记录区域 -->
   <view class="mid">

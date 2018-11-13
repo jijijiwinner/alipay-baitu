@@ -1,21 +1,24 @@
 <view class="container">
   <!-- 充值记录列表 -->
-  <view class="main" a:if="{{re_array.length != 0 }}">
-    <block a:for="{{re_array}}" a:key='index'>
-      <view class="main-all">
-        <view class="main-top">
-          <view class="font_color3 font_15">{{item.platformName}}</view>
-          <view class="font_color6 font_13">{{item.timestamp}}</view>
+  <scroll-view scroll-y onScroll="scroll" scroll-top="{{scrollTop}}" style='height:{{winHeight}}px'>
+    <view class="main" a:if="{{re_array.length != 0 }}">
+      <block a:for="{{re_array}}" a:key='index'>
+        <view class="main-all">
+          <view class="main-top">
+            <view class="font_color3 font_15">{{item.platformName}}</view>
+            <view class="font_color6 font_13">{{item.timestamp}}</view>
+          </view>
+          <view class="main-bottom font_15 font_color4">+{{item.money}}</view>
         </view>
-        <view class="main-bottom font_15 font_color4">+{{item.money}}</view>
-      </view>
-    </block>
-  </view>
-  <!-- 无数据的列表显示 -->
-  <view class="no-list" a:else>
-    <view class="noRecord">
-      <image src="../../image/icon_zanwu.png" mode="widthFix" />
+      </block>
+      <image a:if="{{backTop}}" onTap="goTop" class="backTop" src="../../image/backTop_btn.png" mode="widthFix" />      
     </view>
-    <view class="noRecord font_color4">暂无充值记录</view>
-  </view>
+    <!-- 无数据的列表显示 -->
+    <view class="no-list" a:else>
+      <view class="noRecord">
+        <image src="../../image/icon_zanwu.png" mode="widthFix" />
+      </view>
+      <view class="noRecord font_color4">暂无充值记录</view>
+    </view>
+  </scroll-view>
 </view>

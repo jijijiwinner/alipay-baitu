@@ -12,7 +12,7 @@
   </view>
   <!-- 公司信息 -->
   <view class="footer">
-    <view class="font_13 font_color3">浙江佰途科技有限公司</view>
-    <view class="font_13 font_color3">客服热线：400-168-2811</view>
+    <view class="font_13 font_color3 text_align_c">浙江佰途科技有限公司</view>
+    <view class="font_13 font_color3 text_align_c">客服热线：400-168-2811</view>
   </view>
 </view>

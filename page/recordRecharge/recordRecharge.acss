@@ -23,3 +23,11 @@
 .no-list {
   padding: 80rpx;
 }
+.backTop {
+  position: fixed;
+  bottom: 10%;
+  right: 12%;
+  z-index: 100;
+  width: 80rpx;
+  height: 80rpx;
+}

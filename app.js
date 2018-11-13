@@ -23,6 +23,14 @@ App({
       my.setStorage({ key: 'page', data: options.query.target_page });
       my.setStorage({ key: 'promoters', data: options.query.ground_promotion_no });
       my.setStorage({ key: 'cacheTime', data: Date.parse(new Date()) + 900000 })
+      if (options.query.qrCode) {
+        var qrCode = options.query.qrCode;
+        if (qrCode.indexOf("?mac=")) {
+          var reg = new RegExp("mac=([A-Za-z0-9_]*)");
+          var mac = qrCode.match(reg)[1];
+          my.setStorage({ key: 'mac', data: mac });
+        }
+      }
     }
   },
 

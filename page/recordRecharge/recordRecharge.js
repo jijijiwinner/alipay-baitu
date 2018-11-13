@@ -5,6 +5,8 @@ Page({
     re_array: [],   // 充值记录列表
     re_page: 1,     // 充值记录页数1
     pageNum: 15,    // 页面显示数量
+    scrollTop: 0,   // 滚动距离,
+    backTop: false, // 回到顶部隐藏
   },
   onLoad() {
     let userId = my.getStorageSync({
@@ -12,6 +14,7 @@ Page({
     }).data;
     this.setData({ userId: userId })
     this.getRecharge(1);
+    this.getHeight();
   },
   // 下拉刷新
   onPullDownRefresh() {
@@ -37,7 +40,7 @@ Page({
     }
 
     app.req.requestPostApi(url, params, this, res => {
-      my.stopPullDownRefresh()      
+      my.stopPullDownRefresh()
       let array = this.data.re_array;
       if (res.res.length == 0) {
         return;
@@ -62,4 +65,34 @@ Page({
       })
     })
   },
+  // 获取高度
+  getHeight() {
+    my.getSystemInfo({
+      success: (res) => {
+        this.setData({
+          winHeight: res.windowHeight
+        })
+      },
+    });
+  },
+  // scroll
+  scroll(e) {
+    if (e.detail.scrollTop > 300) {
+      this.setData({
+        backTop: true,
+        scrollTop: e.detail.scrollTop,
+      })
+    } else {
+      this.setData({
+        backTop: false
+      })
+    }
+  },
+  // goTop
+  goTop() {
+    let scrollTop = this.data.scrollTop;
+    this.setData({
+      scrollTop: 0,
+    })
+  }
 });

@@ -20,3 +20,12 @@
 <view class='draw-footer'>
   <text>出水中途可点击停水</text>
 </view>
+<!-- <view class="advert">
+  <swiper indicator-dots autoplay interval="3000" duration="1000">
+    <block a:for="{{info}}" a:key="index">
+      <swiper-item>
+        <image src="{{item.img}}" class='image' onTap='jumpTo' data-info="{{item.action}}" data-url="{{item.h5url}}" data-id="{{item.id}}" />
+      </swiper-item>
+    </block>
+  </swiper>
+</view> -->

@@ -68,10 +68,6 @@ Page({
   goWallet() {
     my.navigateTo({ url: '/page/wallet/wallet' });
   },
-  // 充值
-  goRecharge() {
-    my.navigateTo({ url: '/page/recharge/recharge' });
-  },
   // 绑卡
   goBindCard() {
     my.navigateTo({ url: '/page/swingCard/swingCard' });

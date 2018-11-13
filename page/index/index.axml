@@ -13,9 +13,7 @@
   <!-- 扫一扫二维码 -->
   <view class="sweep-area" a:if="{{showType}}">
     <view class="scan" onTap="scanCode" a:if="{{!state}}"></view>
-    <view class="scan" onTap="stopHot" a:else>
-      <text>出水中</text>
-    </view>
+    <view class="stopHot" onTap="stopHot" a:else></view>
   </view>
   <view class="sweep-area" a:else>
     <text class="font_13 font_color7">将二维码对准设备扫码口</text>
@@ -29,4 +27,13 @@
     </view>
     <view style="{{switch}}">{{switchName}}</view>
   </view>
+  <view class="bg_bottom"></view>
+  <!-- 活动弹窗 -->
+<view class="popUp" a:if="{{showActPopup}}">
+  <view class="act-shadow"></view>
+  <view class="act-detail" a:for="{{actList.ad_list}}">
+    <image onTap="hideActPopup" src="../../image/one_close.png" mode="aspectFit" />
+    <image data-info="{{item.id}}" onTap="goActDetail" src="{{item.img}}" mode="widthFix" />
+  </view>
+</view>
 </view>

@@ -4,7 +4,7 @@
     <view>
       <image src="{{tips[modeType-1].image}}" mode="widthFix" />
     </view>
-    <view>{{tips[modeType-1].text}}</view>
+    <view class="font_13">{{tips[modeType-1].text}}</view>
   </view>
   <!-- 选择模式区域 -->
   <view class="machine-mid" a:if="{{is_baitu_worker}}">
@@ -37,7 +37,7 @@
     <!-- 支付方式 -->
     <view class="machine-pay" catchTap='openPay'>
       <view>支付方式</view>
-      <view>{{payMethod}}</view>
+      <view id='{{payModel}}'>{{payMethod}}</view>
       <image src="../../image/jiantou.png" mode="aspectFit" />
     </view>
     <!-- 支付方式弹出框 -->
@@ -46,7 +46,7 @@
         <block a:for="{{payList}}" a:key='item.type'>
           <view class="payHeader" catchTap='selectPay' id='{{item.type}}' data-text='{{item.description}}' >
             <view class="header-top">
-              <image class="payImg" src="{{item.icon_url}}" mode="widthFix" />
+              <image class="payImg" src="{{item.icon_url}}"  />
             </view>
             <!-- 默认列表 -->
             <view class="header-bottom" data-text='{{item.description}}' id='{{item.type}}'>{{item.description}}</view>

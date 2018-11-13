@@ -1,5 +1,5 @@
 const app = getApp();
-var QR = require('../../service/aliqrcode.js');
+let QR = require('../../service/aliqrcode.js');
 
 Page({
   /*
@@ -28,7 +28,8 @@ Page({
     modeId: '',
     tradeNO: '',
     switch: '',
-    switchName: '扫一扫'
+    switchName: '扫一扫',
+    showActPopup: false,  // 主页弹窗显示隐藏
   },
   //调用获取屏幕宽高以及授权方法
   onLoad(options) {
@@ -40,10 +41,39 @@ Page({
       this.setData({
         state: true,
       })
+      this.getState();
     };
     if (app.globalData.deviceState == 2) {
       app.globalData.deviceState = 0;
     }
+  },
+  // 获取设备状态
+  getState() {
+    let polling_time = new Date().getTime();
+    let sign_time = app.common.createSign({
+      mac: this.data.mac,
+      userName: this.data.userId,
+      timestamp: polling_time
+    })
+    let params = {
+      sign: sign_time,
+      timestamp: polling_time,
+      mac: this.data.mac,
+      userName: this.data.userId,
+    }
+    let _this = this;
+    let polling = setInterval(() => {
+      app.req.requestPostApi('/miniprogram/machine/queryHotState', params, this, res => {
+        if (res.res == 1) {
+          clearInterval(polling);
+          _this.setData({
+            state: false,
+          })
+        }
+      }), res => {
+        clearInterval(polling);
+      }
+    }, 1000)
   },
   // 获取授权判断用户状态
   getAuthCode() {
@@ -122,7 +152,7 @@ Page({
                   mac: res.data
                 })
                 my.navigateTo({
-                  url: '/page/machineModel/machineModel'
+                  url: '/page/machineModel/machineModel?mac=' + res.data
                 });
               }
             },
@@ -134,27 +164,40 @@ Page({
   // 扫码功能
   scanCode() {
     let that = this;
-    var mac;
     my.scan({
       success: (res) => {
-        mac = res.code;
-        that.setData({ mac: mac })
-        my.navigateTo({ url: '/page/machineModel/machineModel?mac=' + mac });
+        if (res.qrCode) {
+          let qrCode = res.qrCode;
+          if (res.qrCode.indexOf('?mac=')) {
+            let reg = new RegExp("mac=([A-Za-z0-9_]*)");
+            let mac = qrCode.match(reg)[1];
+            that.setData({ mac: mac })
+            my.navigateTo({ url: '/page/machineModel/machineModel?mac=' + mac });
+          }
+        } else if (res.code) {
+          let qrCode = res.qrCode;
+          if (res.qrCode.indexOf('?mac=')) {
+            let reg = new RegExp("mac=([A-Za-z0-9_]*)");
+            let mac = qrCode.match(reg)[1];
+            that.setData({ mac: mac })
+            my.navigateTo({ url: '/page/machineModel/machineModel?mac=' + mac });
+          }
+        }
       }
     });
   },
   // 停止开水
   stopHot() {
-    var that = this;
+    let that = this;
     let userId = this.data.userId;
     let url = '/miniprogram/machine/stophot';
-    var time = new Date().getTime();
-    var sign = app.common.createSign({
+    let time = new Date().getTime();
+    let sign = app.common.createSign({
       mac: that.data.mac,
       timestamp: time,
       userName: userId
     });
-    var params = {
+    let params = {
       userName: userId,
       timestamp: time,
       mac: that.data.mac,
@@ -192,24 +235,58 @@ Page({
   },
   // 获取广告位信息
   getAdInfo() {
-    var that = this;
+    let that = this;
     let userId = this.data.userId;
     let url = '/miniprogram/ad/adList';
-    var time = new Date().getTime();
-    var sign = app.common.createSign({
+    let time = new Date().getTime();
+    let sign = app.common.createSign({
       userName: userId,
       timestamp: time
     })
-    var params = {
+    let params = {
       userName: userId,
       timestamp: time,
       sign: sign
     }
     app.req.requestPostApi(url, params, this, res => {
       that.setData({
-        info: res.res
+        info: res.res[0].ad_list,
+        actList: res.res[1]
       })
+      this.getPopup();
     })
+  },
+  getPopup() {
+    let current_days = new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate();
+    let data_days = my.getStorageSync({
+      key: 'data_days', // 缓存数据的key
+    }).data;
+    let ad_list = this.data.actList.ad_list;
+    let actType = this.data.actList.position_type;
+    if (data_days != current_days && actType == 2 && ad_list.length != 0) {
+      this.setData({
+        showActPopup: true,
+      })
+      my.setStorageSync({
+        key: 'data_days', // 缓存数据的Wkey
+        data: current_days, // 要缓存的数据
+      });
+    } else {
+      this.setData({
+        showActPopup: false
+      })
+    }
+  },
+  // 隐藏活动弹窗
+  hideActPopup() {
+    this.setData({
+      showActPopup: false,
+    })
+  },
+  // 活动详情
+  goActDetail(e) {
+    let id = e.currentTarget.dataset.info;
+    my.navigateTo({ url: '/page/activity/activity?id=' + id });
   },
   // 跳转到H5页面
   jumpTo(e) {
@@ -218,7 +295,7 @@ Page({
         break;
       case 1:
         my.setStorageSync({
-          key: 'nav',
+          key: 'ad_url',
           data: e.currentTarget.dataset.url,
         });
         my.navigateTo({
@@ -226,7 +303,14 @@ Page({
         })
         break;
       case 2:
-        my.navigateTo({ url: '/page/operation/operation' });
+        // my.navigateTo({ url: '/page/operation/operation' });
+        break;
+      case 3:
+        my.setStorageSync({
+          key: 'nav',
+          data: e.currentTarget.dataset.url,
+        });
+        my.navigateTo({ url: '/page/activity/activity?id=' + e.currentTarget.dataset.id });
         break;
     }
   },

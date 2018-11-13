@@ -21,8 +21,11 @@ page {
   color: #292929;
 }
 .footer {
-  text-align: center;
-}
-.footer > view:first-child {
-  padding: 460rpx 0 12rpx 0;
+  width: 400rpx;
+  height: 100rpx;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  margin-left: -200rpx;
+  margin-right: -200rpx;
 }

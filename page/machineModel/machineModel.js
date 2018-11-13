@@ -10,7 +10,7 @@ Page({
     modeList: [], // 模式的数组
     modeName: '',  // 选择模式的文字
     modeType: '',  // 模式的类型
-    payModel: '',  // 支付的ID
+    payModel: '',  // 支付的类型
     money: '', // 显示余额
     signing: '',// 判断是否签约
     accMoney: false, // 字段判断
@@ -48,8 +48,7 @@ Page({
     }).data;
     let that = this;
     let time = new Date().getTime();
-    let mac = that.data.mac;
-    that.setData({ payMethod: payMethod, payModel: payModel, mac: mac, userId: userId })
+    that.setData({ payMethod: payMethod, payModel: payModel, mac: that.data.mac, userId: userId })
     let sign = app.common.createSign({
       mac: that.data.mac,
       timestamp: time,
@@ -69,6 +68,14 @@ Page({
         payList: res.res.pay_type_list,
         signing: res.res.is_alipay_withhold_sign
       })
+      let payModel = my.setStorageSync({
+        key: 'payModel', // 缓存数据的key
+        data: res.res.pay_type_list[0].type, // 要缓存的数据
+      });
+      let payMethod = my.setStorageSync({
+        key: 'payMethod', // 缓存数据的key
+        data: res.res.pay_type_list[0].description, // 要缓存的数据
+      });
       let modeList = res.res.modeList;
       modeList.forEach(el => {
         el.selected = false;
@@ -160,6 +167,7 @@ Page({
       userName: userId,
     };
     app.req.requestPostApi('/miniprogram/stu/money', params, this, res => {
+      console.log(res);
       this.setData({ money: res.message })
       if (res.message < 0.2) {
         this.setData({

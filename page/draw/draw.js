@@ -1,15 +1,16 @@
 const app = getApp();
-var missionTime;
+let missionTime;
 Page({
   data: {
-    mapping: '',
-    modeId: '',
-    payModel: '',
-    userId: '',
-    tradeNO: '',
-    modeType: '',
-    drawFlow1: '',
-    drawFlow2: '',
+    mapping: '',    // 映射
+    modeId: '',     // 设备模式标识
+    payModel: '',   // 支付模式
+    userId: '',     // 用户标识
+    tradeNO: '',    // 支付订单号
+    modeType: '',   // 机器模式：区分开水器还是其他
+    drawFlow1: '',  // 动画效果变量1
+    drawFlow2: '',  // 动画效果变量2
+    info: [],        // 广告位数组
   },
 
   onLoad(options) {
@@ -35,6 +36,7 @@ Page({
   },
   onShow() {
     app.globalData.devicePage = 'draw';
+    this.getAdInfo();
   },
   // 免密开启设备
   freeOpenMachine() {
@@ -73,7 +75,7 @@ Page({
     })
   },
   // 非免密开启设备
-  nofreeMachine() {
+  nofreeMachine(tradeNO) {
     my.tradePay({
       tradeNO: tradeNO,
       success: (res) => {
@@ -123,12 +125,18 @@ Page({
             content: '订单支付失败',
             type: 'fail',
             duration: 1000,
+            success: res => {
+              my.navigateBack({})
+            }
           })
         } else if (res.resultCode == 6001) {
           my.showToast({
             content: '订单中途取消',
             type: 'fail',
             duration: 1000,
+            success: res => {
+              my.navigateBack({})
+            }
           })
         }
       }
@@ -136,26 +144,55 @@ Page({
   },
   // 停止开水
   stopHot() {
-    var that = this;
+    let that = this;
     let mapping = that.data.mapping;
     let userId = that.data.userId;
     let url = '/miniprogram/machine/stophot';
-    var time = new Date().getTime();
-    var sign = app.common.createSign({
+    let time = new Date().getTime();
+    let sign = app.common.createSign({
       mac: mapping,
       timestamp: time,
       userName: userId
     });
-    var params = {
+    let params = {
       userName: userId,
       timestamp: time,
       mac: mapping,
       sign: sign
     };
     app.req.requestPostApi(url, params, this, res => {
-      my.navigateBack({
-
+      that.setData({
+        state: false
       });
+      app.globalData.deviceState = 0;
+      my.navigateBack({ delta: 2 });
+    }, function(err) {
+      that.setData({
+        state: false
+      });
+      app.globalData.deviceState = 0;
+      my.navigateBack({ delta: 2 });
+    })
+  },
+  // 获取广告位信息
+  getAdInfo() {
+    let that = this;
+    let userId = that.data.userId;
+    let url = '/miniprogram/ad/adList';
+    let time = new Date().getTime();
+    let sign = app.common.createSign({
+      userName: userId,
+      timestamp: time
+    })
+    let params = {
+      userName: userId,
+      timestamp: time,
+      sign: sign
+    }
+    app.req.requestPostApi(url, params, this, res => {
+      that.setData({
+        info: res.res
+      })
     })
   },
 });

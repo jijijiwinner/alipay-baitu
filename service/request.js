@@ -47,12 +47,6 @@ function requestApi(url, params, method, headers, sourceObj, successFun, failFun
     'x-platform': 'Alipay'
   };
 
-  // if (url.indexOf("?") > 0) {
-  //   url += "&accessToken=" + my.getStorageSync('token');
-  // } else {
-  //   url += "?accessToken=" + my.getStorageSync('token');
-  // }
-
   // 特殊头部
   if (method == 'POST' && headers == 0) {
     headerOptions["Content-Type"] = 'application/json';

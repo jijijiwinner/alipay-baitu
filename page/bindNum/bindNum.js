@@ -109,20 +109,20 @@ Page({
       })
     } else if (code != '') {
       my.showToast({
-        content: '输入手机号啦',
+        content: '请输入手机号',
         type: 'fail',
         duration: 1000,
       });
     } else if (telephone != '') {
       my.showToast({
-        content: '输入验证码啦',
+        content: '请输入验证码',
         type: 'fail',
         duration: 1000,
       });
     }
     else {
       my.showToast({
-        content: "输入手机号和验证码啦",
+        content: "请输入和验证码",
         type: "fail",
         duration: 1000,
       });

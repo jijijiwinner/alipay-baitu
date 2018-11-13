@@ -91,3 +91,19 @@ page {
 .draw-footer text{
   color: #50a6ef;
 }
+/* .advert {
+  position: fixed;
+  width: 100%;
+  bottom: 10rpx;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+}
+.advert > swiper {
+  height: 140rpx;
+}
+swiper image {
+  width: 100%;
+  height: 150rpx;
+} */

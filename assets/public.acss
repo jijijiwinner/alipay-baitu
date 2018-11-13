@@ -2,6 +2,12 @@
 .font_12 {
   font-size: 12px;
 }
+.font_13 {
+  font-size: 13px;
+}
+.font_14 {
+  font-size: 14px;
+}
 .font_15{
   font-size: 15px;
 }

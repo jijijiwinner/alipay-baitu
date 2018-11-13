@@ -13,6 +13,11 @@
 .person-school {
   display: flex;
   align-items: center;
+  justify-content: center;
+}
+.person-school view:first-child{
+  width: 400rpx;
+  text-align: right;
 }
 .image {
   width: 18rpx;

@@ -27,9 +27,9 @@
 ├── app.acss                    // 全局样式配置
 ├── page                        // 生产目录
 │   ├── about                   // 关于我们
+│   ├── activity                // 活动详情
 │   ├── agmentRecharge          // 充值协议
 │   ├── agmentUser              // 用户协议
-│   ├── baituH5                 // 广告位web-view
 │   ├── bindNum                 // 绑定手机号
 │   ├── comment                 // 发起反馈
 │   ├── comment_list            // 反馈列表
